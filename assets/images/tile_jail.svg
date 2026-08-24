@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <rect width="120" height="120" rx="12" fill="#BBDEFB"/>
+  <rect x="4" y="4" width="112" height="112" rx="10" fill="none" stroke="#1565C0" stroke-width="3"/>
+  <rect x="30" y="25" width="60" height="70" rx="6" fill="#1565C0" opacity="0.8"/>
+  <rect x="38" y="35" width="44" height="50" rx="4" fill="#BBDEFB"/>
+  <line x1="60" y1="35" x2="60" y2="85" stroke="#1565C0" stroke-width="3"/>
+  <circle cx="52" cy="55" r="5" fill="#1565C0"/>
+  <rect x="35" y="88" width="50" height="8" rx="4" fill="#1565C0"/>
+  <text x="60" y="115" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" font-weight="bold" fill="#0D47A1">PENJARA</text>
+</svg>

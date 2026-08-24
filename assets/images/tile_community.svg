@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <rect width="120" height="120" rx="12" fill="#E1F5FE"/>
+  <rect x="4" y="4" width="112" height="112" rx="10" fill="none" stroke="#0277BD" stroke-width="3"/>
+  <rect x="25" y="20" width="70" height="50" rx="8" fill="#0288D1"/>
+  <rect x="32" y="28" width="56" height="34" rx="4" fill="#E1F5FE"/>
+  <circle cx="60" cy="45" r="12" fill="none" stroke="#0277BD" stroke-width="3"/>
+  <text x="60" y="50" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" font-weight="bold" fill="#01579B">Rp</text>
+  <text x="60" y="95" text-anchor="middle" font-family="Arial,sans-serif" font-size="11" font-weight="bold" fill="#01579B">DANA UMUM</text>
+</svg>

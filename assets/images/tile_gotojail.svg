@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <rect width="120" height="120" rx="12" fill="#FFCDD2"/>
+  <rect x="4" y="4" width="112" height="112" rx="10" fill="none" stroke="#C62828" stroke-width="3"/>
+  <polygon points="60,15 95,90 25,90" fill="#C62828" opacity="0.9"/>
+  <text x="60" y="75" text-anchor="middle" font-family="Arial,sans-serif" font-size="36" font-weight="bold" fill="white">!</text>
+  <text x="60" y="110" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" font-weight="bold" fill="#B71C1C">MASUK</text>
+</svg>

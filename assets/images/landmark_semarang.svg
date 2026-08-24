@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 120" width="200" height="120">
+  <!-- Lawang Sewu Semarang -->
+  <rect width="200" height="120" rx="8" fill="#FFF3E0"/>
+  <!-- Main building -->
+  <rect x="40" y="30" width="120" height="65" rx="4" fill="#EFEBE9"/>
+  <!-- Arched windows -->
+  <g fill="#BBDEFB">
+    <rect x="50" y="40" width="12" height="20" rx="6"/>
+    <rect x="68" y="40" width="12" height="20" rx="6"/>
+    <rect x="86" y="40" width="12" height="20" rx="6"/>
+    <rect x="104" y="40" width="12" height="20" rx="6"/>
+    <rect x="122" y="40" width="12" height="20" rx="6"/>
+    <rect x="140" y="40" width="12" height="20" rx="6"/>
+  </g>
+  <!-- Roof -->
+  <polygon points="35,30 100,8 165,30" fill="#8D6E63"/>
+  <!-- Door -->
+  <rect x="88" y="65" width="24" height="30" rx="12" fill="#5D4037"/>
+  <rect x="40" y="93" width="120" height="5" rx="2" fill="#9E9E9E"/>
+  <text x="100" y="115" text-anchor="middle" font-family="Arial" font-size="11" fill="#E65100">Semarang</text>
+</svg>

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 120" width="200" height="120">
+  <!-- Monas Jakarta -->
+  <rect width="200" height="120" rx="8" fill="#FCE4EC"/>
+  <!-- Base -->
+  <rect x="55" y="85" width="90" height="15" rx="4" fill="#E0E0E0"/>
+  <!-- Body -->
+  <rect x="85" y="30" width="30" height="55" rx="2" fill="#E0E0E0"/>
+  <!-- Flame -->
+  <ellipse cx="100" cy="25" rx="14" ry="12" fill="#FFB300"/>
+  <ellipse cx="100" cy="23" rx="10" ry="9" fill="#FFD54F"/>
+  <!-- Details -->
+  <rect x="80" y="75" width="40" height="10" rx="2" fill="#BDBDBD"/>
+  <!-- Ground -->
+  <rect x="30" y="98" width="140" height="4" rx="2" fill="#81C784"/>
+  <text x="100" y="115" text-anchor="middle" font-family="Arial" font-size="11" fill="#C62828">Jakarta</text>
+</svg>

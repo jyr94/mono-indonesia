@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <rect width="120" height="120" rx="12" fill="#FFF9C4"/>
+  <rect x="4" y="4" width="112" height="112" rx="10" fill="none" stroke="#F9A825" stroke-width="3"/>
+  <rect x="30" y="15" width="60" height="70" rx="6" fill="#FFB300"/>
+  <rect x="38" y="25" width="44" height="50" rx="4" fill="#FFF9C4"/>
+  <text x="60" y="48" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" font-weight="bold" fill="#E65100">PAJAK</text>
+  <text x="60" y="68" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" fill="#BF360C">Rp 200</text>
+  <rect x="20" y="90" width="80" height="10" rx="5" fill="#F57F17"/>
+  <text x="60" y="112" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#E65100">BAYAR</text>
+</svg>

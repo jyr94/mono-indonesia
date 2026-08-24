@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <rect width="120" height="120" rx="12" fill="#FFF9C4"/>
+  <rect x="4" y="4" width="112" height="112" rx="10" fill="none" stroke="#F9A825" stroke-width="3"/>
+  <polygon points="60,15 75,45 105,50 82,72 88,102 60,87 32,102 38,72 15,50 45,45" fill="#FFD54F" stroke="#F9A825" stroke-width="2"/>
+  <text x="60" y="68" text-anchor="middle" font-family="Arial,sans-serif" font-size="24" font-weight="bold" fill="#3E2723">GO</text>
+</svg>

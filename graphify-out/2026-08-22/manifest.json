@@ -1,0 +1,584 @@
+{
+  "android/app/build.gradle.kts": {
+    "mtime": 1787353066.6741896,
+    "seen": 1787379365.354311,
+    "ast_hash": "a1915ded9d0b699fb06c1bba1b20f584",
+    "semantic_hash": "a1915ded9d0b699fb06c1bba1b20f584"
+  },
+  "android/app/google-services.json": {
+    "mtime": 1781566946.028951,
+    "seen": 1787379365.354313,
+    "ast_hash": "586dfb9a2f55635f0ffddee9f9263b29",
+    "semantic_hash": "586dfb9a2f55635f0ffddee9f9263b29"
+  },
+  "android/app/src/main/kotlin/com/monopoli/monopoli_indonesia/MainActivity.kt": {
+    "mtime": 1781489991.9027588,
+    "seen": 1787379365.354314,
+    "ast_hash": "0d646c35eeea5198c49213d769704fbd",
+    "semantic_hash": "0d646c35eeea5198c49213d769704fbd"
+  },
+  "android/build.gradle.kts": {
+    "mtime": 1781566946.0507076,
+    "seen": 1787379365.354315,
+    "ast_hash": "f11f360aed44d4f6871b398346af14f0",
+    "semantic_hash": "f11f360aed44d4f6871b398346af14f0"
+  },
+  "android/settings.gradle.kts": {
+    "mtime": 1782035716.010725,
+    "seen": 1787379365.354316,
+    "ast_hash": "437f65d07c9d0e9ccb3f3416d66c34ff",
+    "semantic_hash": "437f65d07c9d0e9ccb3f3416d66c34ff"
+  },
+  "database.rules.json": {
+    "mtime": 1781565161.3475149,
+    "seen": 1787379365.354317,
+    "ast_hash": "02cfdbf082271c6332d40bee9e512005",
+    "semantic_hash": "02cfdbf082271c6332d40bee9e512005"
+  },
+  "firebase.json": {
+    "mtime": 1781566946.0570471,
+    "seen": 1787379365.3543181,
+    "ast_hash": "a789f2b61c987971c4c96ad9bf16e51b",
+    "semantic_hash": "a789f2b61c987971c4c96ad9bf16e51b"
+  },
+  "lib/constants/app_constants.dart": {
+    "mtime": 1784534784.719414,
+    "seen": 1787379365.3543181,
+    "ast_hash": "dd1b9d6d3a9299190825e6c33d6cdfac",
+    "semantic_hash": "dd1b9d6d3a9299190825e6c33d6cdfac"
+  },
+  "lib/firebase_options.dart": {
+    "mtime": 1781566946.0546646,
+    "seen": 1787379365.354319,
+    "ast_hash": "7e71002aec0abc4cb18bf7eeb5fcceb7",
+    "semantic_hash": "7e71002aec0abc4cb18bf7eeb5fcceb7"
+  },
+  "lib/l10n/app_localizations.dart": {
+    "mtime": 1781565689.56263,
+    "seen": 1787379365.3543198,
+    "ast_hash": "fd3ed3d12db69cf507f9c9c8412b4066",
+    "semantic_hash": "fd3ed3d12db69cf507f9c9c8412b4066"
+  },
+  "lib/main.dart": {
+    "mtime": 1786869851.7176661,
+    "seen": 1787379365.354321,
+    "ast_hash": "bc60d8d01f8f316c744dbaede1c4d3fd",
+    "semantic_hash": "bc60d8d01f8f316c744dbaede1c4d3fd"
+  },
+  "lib/models/board.dart": {
+    "mtime": 1787354046.9325454,
+    "seen": 1787379365.354322,
+    "ast_hash": "aaf93ce1ebfa058240cc6cdc85e98eff",
+    "semantic_hash": "aaf93ce1ebfa058240cc6cdc85e98eff"
+  },
+  "lib/models/dice.dart": {
+    "mtime": 1787353985.6378624,
+    "seen": 1787379365.354323,
+    "ast_hash": "2fddf87f5b63dfe47dc8b490765d9e9e",
+    "semantic_hash": "2fddf87f5b63dfe47dc8b490765d9e9e"
+  },
+  "lib/models/game_engine.dart": {
+    "mtime": 1787378729.7709622,
+    "seen": 1787379365.354323,
+    "ast_hash": "3929fcd6ec1344795b8b23df0d9eed96",
+    "semantic_hash": "3929fcd6ec1344795b8b23df0d9eed96"
+  },
+  "lib/models/game_state.dart": {
+    "mtime": 1781490165.0892038,
+    "seen": 1787379365.3543239,
+    "ast_hash": "ef3084726a29cdea92ded3c34ffc6206",
+    "semantic_hash": "ef3084726a29cdea92ded3c34ffc6206"
+  },
+  "lib/models/player.dart": {
+    "mtime": 1787354311.2072036,
+    "seen": 1787379365.354325,
+    "ast_hash": "b0ca6dc9c7ddae49ea50cb94f555ab9e",
+    "semantic_hash": "b0ca6dc9c7ddae49ea50cb94f555ab9e"
+  },
+  "lib/models/property.dart": {
+    "mtime": 1787354279.0541568,
+    "seen": 1787379365.354326,
+    "ast_hash": "a389432dc11a7454d890401bf74ac5b0",
+    "semantic_hash": "a389432dc11a7454d890401bf74ac5b0"
+  },
+  "lib/models/room_model.dart": {
+    "mtime": 1781565087.4431612,
+    "seen": 1787379365.354327,
+    "ast_hash": "77cce2b8f814a15f98b5052b600d1117",
+    "semantic_hash": "77cce2b8f814a15f98b5052b600d1117"
+  },
+  "lib/models/tile.dart": {
+    "mtime": 1781490055.6865935,
+    "seen": 1787379365.354327,
+    "ast_hash": "42186e21ba08a01fa40f42a0c1f8ca47",
+    "semantic_hash": "42186e21ba08a01fa40f42a0c1f8ca47"
+  },
+  "lib/models/utility.dart": {
+    "mtime": 1787354286.3172705,
+    "seen": 1787379365.3543282,
+    "ast_hash": "fb6ffcc48b9ec1fb82ed9bd45ace87cf",
+    "semantic_hash": "fb6ffcc48b9ec1fb82ed9bd45ace87cf"
+  },
+  "lib/screens/game_screen.dart": {
+    "mtime": 1787378735.9908185,
+    "seen": 1787379365.354329,
+    "ast_hash": "71df4ed4e149a9e9b8e067e191798042",
+    "semantic_hash": "71df4ed4e149a9e9b8e067e191798042"
+  },
+  "lib/screens/home_screen.dart": {
+    "mtime": 1787378754.9283984,
+    "seen": 1787379365.35433,
+    "ast_hash": "91f945f8b473919f61bf3dde7db33127",
+    "semantic_hash": "91f945f8b473919f61bf3dde7db33127"
+  },
+  "lib/screens/join_room_screen.dart": {
+    "mtime": 1786870994.3146405,
+    "seen": 1787379365.3543308,
+    "ast_hash": "0eaffc5347229b23b056b4737763e763",
+    "semantic_hash": "0eaffc5347229b23b056b4737763e763"
+  },
+  "lib/screens/lobby_screen.dart": {
+    "mtime": 1786870140.2228792,
+    "seen": 1787379365.3543308,
+    "ast_hash": "90c4c94e1005003b4d5d9d16d9e7fa14",
+    "semantic_hash": "90c4c94e1005003b4d5d9d16d9e7fa14"
+  },
+  "lib/screens/splash_screen.dart": {
+    "mtime": 1786869828.9867609,
+    "seen": 1787379365.354332,
+    "ast_hash": "d4026d87bb7a8bf83a6c2fc51630f6de",
+    "semantic_hash": "d4026d87bb7a8bf83a6c2fc51630f6de"
+  },
+  "lib/services/ad_service.dart": {
+    "mtime": 1784560916.6953244,
+    "seen": 1787379365.354333,
+    "ast_hash": "03f08a65705ea3780eb251f0d8b06ca3",
+    "semantic_hash": "03f08a65705ea3780eb251f0d8b06ca3"
+  },
+  "lib/services/analytics_service.dart": {
+    "mtime": 1781565647.606366,
+    "seen": 1787379365.3543339,
+    "ast_hash": "6fece4f4f7312ae8504f10acfa222562",
+    "semantic_hash": "6fece4f4f7312ae8504f10acfa222562"
+  },
+  "lib/services/audio_service.dart": {
+    "mtime": 1782027937.4596958,
+    "seen": 1787379365.3543339,
+    "ast_hash": "483f3d11fdf8948e48060c2171b80487",
+    "semantic_hash": "483f3d11fdf8948e48060c2171b80487"
+  },
+  "lib/services/auth_service.dart": {
+    "mtime": 1781565783.1450143,
+    "seen": 1787379365.354335,
+    "ast_hash": "adb436c514411a1390c862069681808a",
+    "semantic_hash": "adb436c514411a1390c862069681808a"
+  },
+  "lib/services/chat_service.dart": {
+    "mtime": 1781565658.1812253,
+    "seen": 1787379365.354336,
+    "ast_hash": "f9e81af29c47be0e6ebf23473f9f5983",
+    "semantic_hash": "f9e81af29c47be0e6ebf23473f9f5983"
+  },
+  "lib/services/firebase_service.dart": {
+    "mtime": 1781565094.5260255,
+    "seen": 1787379365.354337,
+    "ast_hash": "2c29a7231a159b9f6d7ce7ca0a2d0cd7",
+    "semantic_hash": "2c29a7231a159b9f6d7ce7ca0a2d0cd7"
+  },
+  "lib/services/game_sync_service.dart": {
+    "mtime": 1781565195.4171786,
+    "seen": 1787379365.354338,
+    "ast_hash": "d57a17eda2b1bc394769c764da633e1d",
+    "semantic_hash": "d57a17eda2b1bc394769c764da633e1d"
+  },
+  "lib/services/player_identity.dart": {
+    "mtime": 1781565297.1655817,
+    "seen": 1787379365.3543391,
+    "ast_hash": "99dbb49ce8920a2eceb2774806c9bf2e",
+    "semantic_hash": "99dbb49ce8920a2eceb2774806c9bf2e"
+  },
+  "lib/services/profile_service.dart": {
+    "mtime": 1781565607.619007,
+    "seen": 1787379365.3543391,
+    "ast_hash": "a8bc78cd381798504d4b3bc7d7227ff0",
+    "semantic_hash": "a8bc78cd381798504d4b3bc7d7227ff0"
+  },
+  "lib/services/room_service.dart": {
+    "mtime": 1781565107.0901985,
+    "seen": 1787379365.35434,
+    "ast_hash": "5113cbe2a63ef7401c74e4d506820793",
+    "semantic_hash": "5113cbe2a63ef7401c74e4d506820793"
+  },
+  "lib/widgets/animated_dice_widget.dart": {
+    "mtime": 1781567405.4062438,
+    "seen": 1787379365.354341,
+    "ast_hash": "1bb1ec221c9bfa3bdeb4ee3b6981264c",
+    "semantic_hash": "1bb1ec221c9bfa3bdeb4ee3b6981264c"
+  },
+  "lib/widgets/auction_dialog.dart": {
+    "mtime": 1781564692.0400538,
+    "seen": 1787379365.354342,
+    "ast_hash": "f4657781b94fc339f17da38ff8e32b2d",
+    "semantic_hash": "f4657781b94fc339f17da38ff8e32b2d"
+  },
+  "lib/widgets/avatar_badge.dart": {
+    "mtime": 1782026922.1888382,
+    "seen": 1787379365.354343,
+    "ast_hash": "4aea3a8a198130b73669e03b077e6d93",
+    "semantic_hash": "4aea3a8a198130b73669e03b077e6d93"
+  },
+  "lib/widgets/board_widget.dart": {
+    "mtime": 1787354138.2539663,
+    "seen": 1787379365.354343,
+    "ast_hash": "69797af2f69e6420f9ee5a1da4a8d990",
+    "semantic_hash": "69797af2f69e6420f9ee5a1da4a8d990"
+  },
+  "lib/widgets/bottom_action_bar.dart": {
+    "mtime": 1787377800.4171457,
+    "seen": 1787379365.354344,
+    "ast_hash": "17300b8beca5381a282157de2a08cc11",
+    "semantic_hash": "17300b8beca5381a282157de2a08cc11"
+  },
+  "lib/widgets/chat_panel.dart": {
+    "mtime": 1781565706.1831763,
+    "seen": 1787379365.3543448,
+    "ast_hash": "d0221ff27773f5112ab98956779ef495",
+    "semantic_hash": "d0221ff27773f5112ab98956779ef495"
+  },
+  "lib/widgets/dice_result_panel.dart": {
+    "mtime": 1787377750.6997178,
+    "seen": 1787379365.354346,
+    "ast_hash": "dbe3c99273d61de6ca11b7fd774b5504",
+    "semantic_hash": "dbe3c99273d61de6ca11b7fd774b5504"
+  },
+  "lib/widgets/game_floating_button.dart": {
+    "mtime": 1781568898.525666,
+    "seen": 1787379365.354346,
+    "ast_hash": "af431a47a97fe98a71131bdf2ab17001",
+    "semantic_hash": "af431a47a97fe98a71131bdf2ab17001"
+  },
+  "lib/widgets/mortgage_sheet.dart": {
+    "mtime": 1787378710.8374145,
+    "seen": 1787379365.3543491,
+    "ast_hash": "82715faf40e12651d0b13c7c126f218d",
+    "semantic_hash": "82715faf40e12651d0b13c7c126f218d"
+  },
+  "lib/widgets/onboarding_overlay.dart": {
+    "mtime": 1781565734.6603644,
+    "seen": 1787379365.35435,
+    "ast_hash": "ef350687c641a1730c9b4a12698f96b6",
+    "semantic_hash": "ef350687c641a1730c9b4a12698f96b6"
+  },
+  "lib/widgets/player_character.dart": {
+    "mtime": 1787354335.2969456,
+    "seen": 1787379365.354351,
+    "ast_hash": "bfcc450100a5741199cdaef209515b36",
+    "semantic_hash": "bfcc450100a5741199cdaef209515b36"
+  },
+  "lib/widgets/player_info_card.dart": {
+    "mtime": 1781567467.1941059,
+    "seen": 1787379365.3543522,
+    "ast_hash": "f074febc7ef462f1b05a54595f73bec4",
+    "semantic_hash": "f074febc7ef462f1b05a54595f73bec4"
+  },
+  "lib/widgets/player_status_card.dart": {
+    "mtime": 1787377780.5073092,
+    "seen": 1787379365.3543522,
+    "ast_hash": "445f69c2d7857d204d7602bcc0eed400",
+    "semantic_hash": "445f69c2d7857d204d7602bcc0eed400"
+  },
+  "lib/widgets/player_token_widget.dart": {
+    "mtime": 1782026922.1883507,
+    "seen": 1787379365.354353,
+    "ast_hash": "83e4ca35420ff428bd8a565de65227ec",
+    "semantic_hash": "83e4ca35420ff428bd8a565de65227ec"
+  },
+  "lib/widgets/property_detail_sheet.dart": {
+    "mtime": 1781564697.2402134,
+    "seen": 1787379365.354356,
+    "ast_hash": "07b94df248912aa83430039d45048b76",
+    "semantic_hash": "07b94df248912aa83430039d45048b76"
+  },
+  "lib/widgets/trade_dialog.dart": {
+    "mtime": 1787378705.1037164,
+    "seen": 1787379365.354357,
+    "ast_hash": "9cd71a448ff2df2063a6bec2fe22d9c6",
+    "semantic_hash": "9cd71a448ff2df2063a6bec2fe22d9c6"
+  },
+  "lib/widgets/turn_banner.dart": {
+    "mtime": 1781596633.1575177,
+    "seen": 1787379365.354358,
+    "ast_hash": "315f44ae6a3f254750a06705b682082b",
+    "semantic_hash": "315f44ae6a3f254750a06705b682082b"
+  },
+  "scripts/build.sh": {
+    "mtime": 1781565988.5853639,
+    "seen": 1787379365.354358,
+    "ast_hash": "a3b767f0531422704fa46f3db14c75d1",
+    "semantic_hash": "a3b767f0531422704fa46f3db14c75d1"
+  },
+  "scripts/prepare_playstore_assets.py": {
+    "mtime": 1782029381.2100546,
+    "seen": 1787379365.3543591,
+    "ast_hash": "2f187dfa5b9c7769a4242e1234df4c6b",
+    "semantic_hash": "2f187dfa5b9c7769a4242e1234df4c6b"
+  },
+  "server/package.json": {
+    "mtime": 1781490352.3562353,
+    "seen": 1787379365.35436,
+    "ast_hash": "baae93e409b8b267fbf07ded7073e61a",
+    "semantic_hash": "baae93e409b8b267fbf07ded7073e61a"
+  },
+  "server/src/handlers.js": {
+    "mtime": 1781490389.9568822,
+    "seen": 1787379365.354361,
+    "ast_hash": "ecd522bd11d3076aa4a9e9c1d734b4bb",
+    "semantic_hash": "ecd522bd11d3076aa4a9e9c1d734b4bb"
+  },
+  "server/src/index.js": {
+    "mtime": 1781490354.829189,
+    "seen": 1787379365.354361,
+    "ast_hash": "b249c83f51454bee66b99753a3ad90f8",
+    "semantic_hash": "b249c83f51454bee66b99753a3ad90f8"
+  },
+  "server/src/protocol.js": {
+    "mtime": 1781564947.5501137,
+    "seen": 1787379365.354362,
+    "ast_hash": "e6a84fc893b60cbcbc41ba9a35525513",
+    "semantic_hash": "e6a84fc893b60cbcbc41ba9a35525513"
+  },
+  "server/src/room-manager.js": {
+    "mtime": 1781490369.2747874,
+    "seen": 1787379365.354363,
+    "ast_hash": "4e591b2d5915215c14c1b77aa1dfec5e",
+    "semantic_hash": "4e591b2d5915215c14c1b77aa1dfec5e"
+  },
+  "server/src/room.js": {
+    "mtime": 1781490362.9801946,
+    "seen": 1787379365.354364,
+    "ast_hash": "c10ad3dd5b48ef319cccf2155d2bed54",
+    "semantic_hash": "c10ad3dd5b48ef319cccf2155d2bed54"
+  },
+  "test/game_engine_test.dart": {
+    "mtime": 1781962049.843684,
+    "seen": 1787379365.3543649,
+    "ast_hash": "747d99d8f158a3d4f3f4bd4c3116abce",
+    "semantic_hash": "747d99d8f158a3d4f3f4bd4c3116abce"
+  },
+  "test/multiplayer_edge_case_test.dart": {
+    "mtime": 1781962049.8514233,
+    "seen": 1787379365.3543649,
+    "ast_hash": "7615445143c4a81ab746dccdb9f953e1",
+    "semantic_hash": "7615445143c4a81ab746dccdb9f953e1"
+  },
+  "test/widget_test.dart": {
+    "mtime": 1781565476.3646142,
+    "seen": 1787379365.354366,
+    "ast_hash": "7debdf052fc26aa6a7adf5b37e0a20cc",
+    "semantic_hash": "7debdf052fc26aa6a7adf5b37e0a20cc"
+  },
+  "tool/playstore_screenshot_app.dart": {
+    "mtime": 1782029061.8306663,
+    "seen": 1787379365.354367,
+    "ast_hash": "da1309320dc8de47d773d43e53ff76b9",
+    "semantic_hash": "da1309320dc8de47d773d43e53ff76b9"
+  },
+  "web/manifest.json": {
+    "mtime": 1781565973.0289226,
+    "seen": 1787379365.354368,
+    "ast_hash": "965cc81606565b4aa98c7c17629e5e88",
+    "semantic_hash": "965cc81606565b4aa98c7c17629e5e88"
+  },
+  "assets/audio/sfx_build.ogg": {
+    "mtime": 1782027818.3524046,
+    "seen": 1787379365.354368,
+    "ast_hash": "1bbc04aca73f33ed48ff186084476b01",
+    "semantic_hash": "1bbc04aca73f33ed48ff186084476b01"
+  },
+  "assets/audio/sfx_card.ogg": {
+    "mtime": 1782027818.3485477,
+    "seen": 1787379365.354369,
+    "ast_hash": "b5292c02f058d36e69bddb8d8356b77c",
+    "semantic_hash": "b5292c02f058d36e69bddb8d8356b77c"
+  },
+  "assets/audio/sfx_cash.ogg": {
+    "mtime": 1782027818.346429,
+    "seen": 1787379365.35437,
+    "ast_hash": "c29d0e492e70ba707adfdc60ab5f322b",
+    "semantic_hash": "c29d0e492e70ba707adfdc60ab5f322b"
+  },
+  "assets/audio/sfx_click.ogg": {
+    "mtime": 1782027818.3560567,
+    "seen": 1787379365.354371,
+    "ast_hash": "6a49f4497af99379b312dad849372c44",
+    "semantic_hash": "6a49f4497af99379b312dad849372c44"
+  },
+  "assets/audio/sfx_dice_land.ogg": {
+    "mtime": 1782027818.3443196,
+    "seen": 1787379365.354372,
+    "ast_hash": "46632bd40ea16807c46da806c050369e",
+    "semantic_hash": "46632bd40ea16807c46da806c050369e"
+  },
+  "assets/audio/sfx_dice_roll.ogg": {
+    "mtime": 1782027818.3416991,
+    "seen": 1787379365.3543732,
+    "ast_hash": "52f7964256f643f80370eb36de74adff",
+    "semantic_hash": "52f7964256f643f80370eb36de74adff"
+  },
+  "assets/audio/sfx_jail.ogg": {
+    "mtime": 1782027818.3541334,
+    "seen": 1787379365.354375,
+    "ast_hash": "365e865981118657bf9356b949f7481b",
+    "semantic_hash": "365e865981118657bf9356b949f7481b"
+  },
+  "assets/audio/sfx_step.ogg": {
+    "mtime": 1782027818.350484,
+    "seen": 1787379365.354377,
+    "ast_hash": "867570424c17c12831bb732d1b1a7cc4",
+    "semantic_hash": "867570424c17c12831bb732d1b1a7cc4"
+  },
+  "assets/audio/sfx_turn.ogg": {
+    "mtime": 1782027818.358145,
+    "seen": 1787379365.354378,
+    "ast_hash": "a8c863a2c2486b7dc6c61bf004c4bd64",
+    "semantic_hash": "a8c863a2c2486b7dc6c61bf004c4bd64"
+  },
+  "assets/audio/sfx_win.ogg": {
+    "mtime": 1782027818.360024,
+    "seen": 1787379365.354379,
+    "ast_hash": "ffd7e9c3d666e3c4ed445224ae26ab22",
+    "semantic_hash": "ffd7e9c3d666e3c4ed445224ae26ab22"
+  },
+  "PRD-Monopoli-Indonesia.md": {
+    "mtime": 1781489236.0907826,
+    "seen": 1787379563.492966,
+    "ast_hash": "28fe2d5c6475befeb9e7193a810b728d",
+    "semantic_hash": "28fe2d5c6475befeb9e7193a810b728d"
+  },
+  "README.md": {
+    "mtime": 1781566017.8856158,
+    "seen": 1787379563.492967,
+    "ast_hash": "5c99f308e060c3731e2a81c3f5f39139",
+    "semantic_hash": "5c99f308e060c3731e2a81c3f5f39139"
+  },
+  "TASK-Monopoli-Indonesia.md": {
+    "mtime": 1781566093.0792146,
+    "seen": 1787379563.4929678,
+    "ast_hash": "f8dd9375489f17f20857459469f79284",
+    "semantic_hash": "f8dd9375489f17f20857459469f79284"
+  },
+  "assets/audio/README.md": {
+    "mtime": 1782027900.4484062,
+    "seen": 1787379563.4929678,
+    "ast_hash": "9bbf0d3ae6277bf60325c5d13f649e33",
+    "semantic_hash": "9bbf0d3ae6277bf60325c5d13f649e33"
+  },
+  "desain.md": {
+    "mtime": 1781568705.765168,
+    "seen": 1787379563.492969,
+    "ast_hash": "2cfb79de4d411464b3b0e213b82f72c4",
+    "semantic_hash": "2cfb79de4d411464b3b0e213b82f72c4"
+  },
+  "docs/architecture-decision.md": {
+    "mtime": 1781490348.0306103,
+    "seen": 1787379563.49297,
+    "ast_hash": "ad1896d50f5d6ebb2a4ab54c10ec6c58",
+    "semantic_hash": "ad1896d50f5d6ebb2a4ab54c10ec6c58"
+  },
+  "enhance.md": {
+    "mtime": 1786870303.6972265,
+    "seen": 1787379563.492971,
+    "ast_hash": "423f84b0e7bc632dd6ca7f68714c369b",
+    "semantic_hash": "423f84b0e7bc632dd6ca7f68714c369b"
+  },
+  "pubspec.yaml": {
+    "mtime": 1786939473.951983,
+    "seen": 1787379563.492971,
+    "ast_hash": "8123d72b9def26b82996be199531130b",
+    "semantic_hash": "8123d72b9def26b82996be199531130b"
+  },
+  "web/index.html": {
+    "mtime": 1781565967.350362,
+    "seen": 1787379563.4929721,
+    "ast_hash": "4d27ae71b5ba1458cc74f1cb916dabf1",
+    "semantic_hash": "4d27ae71b5ba1458cc74f1cb916dabf1"
+  },
+  "assets/images/app_logo.svg": {
+    "mtime": 1781566296.33331,
+    "seen": 1787379563.492973,
+    "ast_hash": "963cf929cd45d9a6fa3165ba4adfa9db",
+    "semantic_hash": "963cf929cd45d9a6fa3165ba4adfa9db"
+  },
+  "playstore/assets/phone-01-gameplay-1080x1920.jpg": {
+    "mtime": 1782029391.6472447,
+    "seen": 1787379563.492974,
+    "ast_hash": "db42041d8250ebeb57d9fad4788cf6da",
+    "semantic_hash": "db42041d8250ebeb57d9fad4788cf6da"
+  },
+  "playstore/assets/phone-02-modes-1080x1920.jpg": {
+    "mtime": 1782029391.8575623,
+    "seen": 1787379563.492975,
+    "ast_hash": "513c8df71584483816bbb2e7131917a6",
+    "semantic_hash": "513c8df71584483816bbb2e7131917a6"
+  },
+  "playstore/assets/phone-03-room-1080x1920.jpg": {
+    "mtime": 1782029392.0531476,
+    "seen": 1787379563.4929762,
+    "ast_hash": "9d4cad3a9c7db6035836a445b4e803f8",
+    "semantic_hash": "9d4cad3a9c7db6035836a445b4e803f8"
+  },
+  "playstore/raw/game.png": {
+    "mtime": 1782029281.5838482,
+    "seen": 1787379563.492977,
+    "ast_hash": "dea880b891fe4b66b348d61bde557eba",
+    "semantic_hash": "dea880b891fe4b66b348d61bde557eba"
+  },
+  "playstore/raw/home.png": {
+    "mtime": 1782029327.407998,
+    "seen": 1787379563.4929779,
+    "ast_hash": "133425d861147e12d7a7c067c46e905a",
+    "semantic_hash": "133425d861147e12d7a7c067c46e905a"
+  },
+  "playstore/raw/join.png": {
+    "mtime": 1782029262.7583833,
+    "seen": 1787379563.4929779,
+    "ast_hash": "1bcbe196b16a8a50720730e093084716",
+    "semantic_hash": "1bcbe196b16a8a50720730e093084716"
+  },
+  "playstore/source/feature-key-art.png": {
+    "mtime": 1782029348.2239947,
+    "seen": 1787379563.492979,
+    "ast_hash": "eed8c0351803268309e4042b388fe0e3",
+    "semantic_hash": "eed8c0351803268309e4042b388fe0e3"
+  },
+  "web/favicon.png": {
+    "mtime": 1782030017.2259233,
+    "seen": 1787379563.492984,
+    "ast_hash": "58f6d896395e60643f6099d870abb91d",
+    "semantic_hash": "58f6d896395e60643f6099d870abb91d"
+  },
+  "web/icons/Icon-192.png": {
+    "mtime": 1782030017.0335011,
+    "seen": 1787379563.492985,
+    "ast_hash": "5f60c697c2780058c4f04a3c9bb8ade8",
+    "semantic_hash": "5f60c697c2780058c4f04a3c9bb8ade8"
+  },
+  "web/icons/Icon-512.png": {
+    "mtime": 1782030017.140004,
+    "seen": 1787379563.4929862,
+    "ast_hash": "8720e58a404e649317f1d2f1e467c46c",
+    "semantic_hash": "8720e58a404e649317f1d2f1e467c46c"
+  },
+  "web/icons/Icon-maskable-192.png": {
+    "mtime": 1782030017.1515732,
+    "seen": 1787379563.492987,
+    "ast_hash": "23041b86d9c2680bd1c8186dcca53c52",
+    "semantic_hash": "23041b86d9c2680bd1c8186dcca53c52"
+  },
+  "web/icons/Icon-maskable-512.png": {
+    "mtime": 1782030017.2208583,
+    "seen": 1787379563.492987,
+    "ast_hash": "3ee8edc910f85dbb7b76381e0a737f4f",
+    "semantic_hash": "3ee8edc910f85dbb7b76381e0a737f4f"
+  }
+}

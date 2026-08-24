@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "579782719547",
+    "project_id": "jyr-app-games",
+    "storage_bucket": "jyr-app-games.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:579782719547:android:15c60fdc5415e74d15c41e",
+        "android_client_info": {
+          "package_name": "com.jyr.physicsjigsaw"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD-h7XKsNJSEWY8NZk0kgXUgrEihuc13o4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:579782719547:android:f47c21db3b5be56715c41e",
+        "android_client_info": {
+          "package_name": "com.monopoli.monopoli_indonesia"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD-h7XKsNJSEWY8NZk0kgXUgrEihuc13o4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
