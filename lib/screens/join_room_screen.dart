@@ -311,12 +311,15 @@ class _JoinRoomScreenState extends State<JoinRoomScreen> with TickerProviderStat
                                       color: Colors.white.withOpacity(0.4),
                                     ),
                                   ),
-                                  Text(
-                                    widget.playerName,
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w800,
-                                      color: Color(0xFFFFD700),
+                                  Flexible(
+                                    child: Text(
+                                      widget.playerName,
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w800,
+                                        color: Color(0xFFFFD700),
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
                                     ),
                                   ),
                                 ],

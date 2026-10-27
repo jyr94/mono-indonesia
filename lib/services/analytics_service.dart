@@ -14,7 +14,7 @@ class AnalyticsService {
       name: 'match_start',
       parameters: {
         'player_count': playerCount,
-        'is_multiplayer': isMultiplayer,
+        'is_multiplayer': isMultiplayer ? 1 : 0,
       },
     );
   }
@@ -27,7 +27,7 @@ class AnalyticsService {
     await _analytics.logEvent(
       name: 'match_end',
       parameters: {
-        'won': won,
+        'won': won ? 1 : 0,
         'duration_seconds': durationSeconds,
         'player_count': playerCount,
       },
@@ -70,5 +70,39 @@ class AnalyticsService {
 
   Future<void> logScreenView(String screenName) async {
     await _analytics.logScreenView(screenName: screenName);
+  }
+
+  Future<void> logReviewPromptShown({String source = 'game_over'}) async {
+    await _analytics.logEvent(
+      name: 'review_prompt_shown',
+      parameters: {'source': source},
+    );
+  }
+
+  Future<void> logReviewResponse({required bool liked, required String source}) async {
+    await _analytics.logEvent(
+      name: 'review_response',
+      parameters: {
+        'liked': liked ? 1 : 0,
+        'source': source,
+      },
+    );
+  }
+
+  Future<void> logInAppReviewRequested() async {
+    await _analytics.logEvent(name: 'in_app_review_requested');
+  }
+
+  Future<void> logInternalFeedbackSubmitted({
+    required String category,
+    required int rating,
+  }) async {
+    await _analytics.logEvent(
+      name: 'internal_feedback_submitted',
+      parameters: {
+        'category': category,
+        'rating': rating,
+      },
+    );
   }
 }

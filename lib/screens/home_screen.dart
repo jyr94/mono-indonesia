@@ -5,6 +5,8 @@ import '../constants/app_constants.dart';
 import '../models/player.dart';
 import '../services/player_identity.dart';
 import '../services/room_service.dart';
+import '../services/analytics_service.dart';
+import '../services/app_review_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -28,6 +30,21 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
     );
     _loadIdentity();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Future.delayed(const Duration(milliseconds: 1500), () {
+        if (mounted) {
+          _checkReviewPrompt();
+        }
+      });
+    });
+  }
+
+  void _checkReviewPrompt() {
+    if (!mounted) return;
+    AppReviewService.instance.showSatisfactionPrompt(
+      context,
+      source: 'home_screen_return',
+    );
   }
 
   Future<void> _loadIdentity() async {
@@ -46,6 +63,81 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     super.dispose();
   }
 
+  Future<void> _startBotGame(int botCount) async {
+    final playerName = _nameController.text.trim().isNotEmpty
+        ? _nameController.text.trim().toUpperCase()
+        : (_identity?.playerName ?? 'ANDA');
+
+    if (_identity != null) {
+      await _identity!.updateName(playerName);
+    }
+
+    final botConfigs = [
+      {'name': 'BOT KOMODO', 'color': 'red'},
+      {'name': 'BOT GARUDA', 'color': 'green'},
+      {'name': 'BOT KAPAL', 'color': 'yellow'},
+    ];
+
+    final players = <Player>[
+      Player(
+        id: '1',
+        name: playerName,
+        avatarColor: 'blue',
+        isHost: true,
+        status: PlayerStatus.playing,
+        isBot: false,
+      ),
+    ];
+
+    for (int i = 0; i < botCount; i++) {
+      final config = botConfigs[i % botConfigs.length];
+      players.add(
+        Player(
+          id: '${i + 2}',
+          name: config['name']!,
+          avatarColor: config['color']!,
+          isHost: false,
+          status: PlayerStatus.playing,
+          isBot: true,
+        ),
+      );
+    }
+
+    AnalyticsService().logMatchStart(
+      playerCount: players.length,
+      isMultiplayer: false,
+    );
+
+    if (mounted) {
+      await Navigator.pushNamed(context, '/game', arguments: {
+        'localPlayers': players,
+      });
+      _checkReviewPrompt();
+    }
+  }
+
+  void _showBotModeDialog() {
+    showGeneralDialog(
+      context: context,
+      barrierDismissible: true,
+      barrierLabel: 'bot_mode',
+      barrierColor: Colors.black87,
+      transitionDuration: const Duration(milliseconds: 300),
+      pageBuilder: (ctx, _, __) => const SizedBox.shrink(),
+      transitionBuilder: (ctx, anim, _, __) {
+        return ScaleTransition(
+          scale: CurvedAnimation(parent: anim, curve: Curves.easeOutBack),
+          child: BotSelectionDialog(
+            onSelect: (botCount) {
+              Navigator.pop(ctx);
+              _startBotGame(botCount);
+            },
+          ),
+        );
+      },
+    );
+  }
+
   Future<void> _playLocal() async {
     showGeneralDialog(
       context: context,
@@ -58,11 +150,12 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         return ScaleTransition(
           scale: CurvedAnimation(parent: anim, curve: Curves.easeOutBack),
           child: LocalSetupDialog(
-            onStart: (players) {
+            onStart: (players) async {
               Navigator.pop(ctx);
-              Navigator.pushNamed(context, '/game', arguments: {
+              await Navigator.pushNamed(context, '/game', arguments: {
                 'localPlayers': players,
               });
+              _checkReviewPrompt();
             },
           ),
         );
@@ -288,14 +381,30 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                             height: 12,
                             color: Colors.white.withOpacity(0.2),
                           ),
-                          Text('⭐', style: TextStyle(fontSize: 13)),
-                          const SizedBox(width: 4),
-                          Text(
-                            '4.8 Rating',
-                            style: TextStyle(
-                              fontSize: 11,
-                              color: Colors.white.withOpacity(0.8),
-                              fontWeight: FontWeight.w600,
+                          GestureDetector(
+                            onTap: () {
+                              AppReviewService.instance.showSatisfactionPrompt(
+                                context,
+                                source: 'social_proof_rating',
+                                force: true,
+                              );
+                            },
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Text('⭐', style: TextStyle(fontSize: 13)),
+                                const SizedBox(width: 4),
+                                Text(
+                                  '4.8 Rating',
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    color: Colors.white.withOpacity(0.9),
+                                    fontWeight: FontWeight.w700,
+                                    decoration: TextDecoration.underline,
+                                    decorationColor: AppColors.goldAccent.withOpacity(0.6),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                           Container(
@@ -363,7 +472,15 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                     ),
                     const SizedBox(height: 28),
 
-                    // Buttons
+                    // Hero CTA Button: Main Lawan Bot
+                    _GameButton(
+                      label: 'MAIN LAWAN BOT (SOLO)',
+                      subtitle: 'Main instan vs komputer (1–3 Bot)',
+                      icon: Icons.smart_toy_rounded,
+                      gradient: const [Color(0xFFFFB300), Color(0xFFF57F17)],
+                      onTap: _showBotModeDialog,
+                    ),
+                    const SizedBox(height: 12),
                     _GameButton(
                       label: 'MAIN LOKAL',
                       subtitle: '2–4 pemain di satu HP',
@@ -411,8 +528,41 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'v1.0.0',
+                      'v1.0.6',
                       style: TextStyle(fontSize: 10, color: Colors.white.withOpacity(0.3)),
+                    ),
+                    const SizedBox(height: 12),
+                    TextButton.icon(
+                      onPressed: () {
+                        AppReviewService.instance.showSatisfactionPrompt(
+                          context,
+                          source: 'home_screen_footer',
+                          force: true,
+                        );
+                      },
+                      icon: const Icon(
+                        Icons.rate_review_outlined,
+                        color: AppColors.goldAccent,
+                        size: 16,
+                      ),
+                      label: const Text(
+                        'Suka Game Ini? Beri Ulasan & Masukan',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: AppColors.goldAccent,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      style: TextButton.styleFrom(
+                        backgroundColor: Colors.black.withOpacity(0.25),
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                          side: BorderSide(
+                            color: AppColors.goldAccent.withOpacity(0.35),
+                          ),
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -500,8 +650,8 @@ class _GameButtonState extends State<_GameButton> with SingleTickerProviderState
       child: ScaleTransition(
         scale: _scaleAnim,
         child: SizedBox(
-          width: 300,
-          height: 64,
+          width: 320,
+          height: 68,
           child: Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(colors: widget.gradient),
@@ -520,7 +670,7 @@ class _GameButtonState extends State<_GameButton> with SingleTickerProviderState
             ),
             child: Row(
               children: [
-                const SizedBox(width: 20),
+                const SizedBox(width: 18),
                 Container(
                   width: 40,
                   height: 40,
@@ -530,26 +680,34 @@ class _GameButtonState extends State<_GameButton> with SingleTickerProviderState
                   ),
                   child: Icon(widget.icon, color: Colors.white, size: 24),
                 ),
-                const SizedBox(width: 16),
+                const SizedBox(width: 14),
                 Expanded(
                   child: Column(
+                    mainAxisSize: MainAxisSize.min,
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         widget.label,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
-                          fontSize: 17,
+                          fontSize: 15.5,
                           fontWeight: FontWeight.w900,
                           color: Colors.white,
-                          letterSpacing: 1,
+                          letterSpacing: 0.8,
+                          height: 1.2,
                         ),
                       ),
+                      const SizedBox(height: 2),
                       Text(
                         widget.subtitle,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           fontSize: 11,
                           color: Colors.white.withOpacity(0.7),
+                          height: 1.2,
                         ),
                       ),
                     ],
@@ -558,9 +716,9 @@ class _GameButtonState extends State<_GameButton> with SingleTickerProviderState
                 Icon(
                   Icons.arrow_forward_ios,
                   color: Colors.white.withOpacity(0.4),
-                  size: 16,
+                  size: 14,
                 ),
-                const SizedBox(width: 16),
+                const SizedBox(width: 14),
               ],
             ),
           ),
@@ -986,4 +1144,249 @@ class BatikBackgroundPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+class BotSelectionDialog extends StatefulWidget {
+  final Function(int botCount) onSelect;
+
+  const BotSelectionDialog({super.key, required this.onSelect});
+
+  @override
+  State<BotSelectionDialog> createState() => _BotSelectionDialogState();
+}
+
+class _BotSelectionDialogState extends State<BotSelectionDialog> {
+  int _selectedBots = 1;
+
+  final _options = [
+    {
+      'bots': 1,
+      'title': 'Duel 1 vs 1 (Cepat)',
+      'desc': 'Anda vs 1 Bot AI pintar (~5–8 menit)',
+      'badge': '⚡ PALING CEPAT',
+      'icon': Icons.bolt_rounded,
+    },
+    {
+      'bots': 2,
+      'title': '3 Pemain',
+      'desc': 'Anda vs 2 Bot AI (~10–15 menit)',
+      'badge': '🎯 SERU & SEIMBANG',
+      'icon': Icons.group_rounded,
+    },
+    {
+      'bots': 3,
+      'title': '4 Pemain (Klasik)',
+      'desc': 'Anda vs 3 Bot AI (~15–20 menit)',
+      'badge': '🏆 FORMAT LENGKAP',
+      'icon': Icons.emoji_events_rounded,
+    },
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+      backgroundColor: Colors.transparent,
+      insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+      child: Container(
+        decoration: BoxDecoration(
+          color: const Color(0xFFFFFDE7),
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: AppColors.goldAccent, width: 2.5),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.4),
+              blurRadius: 24,
+              offset: const Offset(0, 10),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Header
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 24),
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Color(0xFFF57F17), Color(0xFFE65100)],
+                ),
+                borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
+              ),
+              child: Column(
+                children: [
+                  const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.smart_toy_rounded, color: Colors.white, size: 26),
+                      SizedBox(width: 8),
+                      Text(
+                        'MAIN LAWAN BOT',
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w900,
+                          color: Colors.white,
+                          letterSpacing: 2,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Pilih mode permainan solo instan',
+                    style: TextStyle(fontSize: 12, color: Colors.white.withOpacity(0.85)),
+                  ),
+                ],
+              ),
+            ),
+
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ..._options.map((opt) {
+                    final bots = opt['bots'] as int;
+                    final selected = _selectedBots == bots;
+                    return GestureDetector(
+                      onTap: () => setState(() => _selectedBots = bots),
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        margin: const EdgeInsets.only(bottom: 12),
+                        padding: const EdgeInsets.all(14),
+                        decoration: BoxDecoration(
+                          color: selected ? Colors.white : Colors.white.withOpacity(0.6),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: selected ? const Color(0xFFE65100) : Colors.grey.shade300,
+                            width: selected ? 2.5 : 1,
+                          ),
+                          boxShadow: selected
+                              ? [
+                                  BoxShadow(
+                                    color: const Color(0xFFE65100).withOpacity(0.2),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 4),
+                                  )
+                                ]
+                              : null,
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 44,
+                              height: 44,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: selected
+                                    ? const Color(0xFFE65100)
+                                    : Colors.grey.shade200,
+                              ),
+                              child: Icon(
+                                opt['icon'] as IconData,
+                                color: selected ? Colors.white : Colors.grey.shade600,
+                                size: 24,
+                              ),
+                            ),
+                            const SizedBox(width: 14),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    opt['title'] as String,
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w800,
+                                      color: selected
+                                          ? const Color(0xFFBF360C)
+                                          : AppColors.textDark,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    opt['desc'] as String,
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      color: Colors.grey.shade600,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFFFFD54F).withOpacity(0.35),
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
+                                    child: Text(
+                                      opt['badge'] as String,
+                                      style: const TextStyle(
+                                        fontSize: 9,
+                                        fontWeight: FontWeight.w800,
+                                        color: Color(0xFFBF360C),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Icon(
+                              selected ? Icons.check_circle_rounded : Icons.radio_button_unchecked,
+                              color: selected ? const Color(0xFFE65100) : Colors.grey.shade400,
+                              size: 24,
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }),
+
+                  const SizedBox(height: 8),
+
+                  // Start button
+                  GestureDetector(
+                    onTap: () => widget.onSelect(_selectedBots),
+                    child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFFE65100), Color(0xFFBF360C)],
+                        ),
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFFE65100).withOpacity(0.4),
+                            blurRadius: 12,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.play_arrow_rounded, color: Colors.white, size: 24),
+                          SizedBox(width: 8),
+                          Text(
+                            'MULAI MAIN SEKARANG!',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w900,
+                              color: Colors.white,
+                              letterSpacing: 1.5,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }

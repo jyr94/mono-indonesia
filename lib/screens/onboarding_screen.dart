@@ -150,6 +150,18 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     );
 
     _pageEnterAnim.forward();
+    _initDefaultName();
+  }
+
+  Future<void> _initDefaultName() async {
+    try {
+      final identity = await PlayerIdentity.getInstance();
+      if (mounted && _nameCtrl.text.isEmpty) {
+        setState(() {
+          _nameCtrl.text = identity.playerName;
+        });
+      }
+    } catch (_) {}
   }
 
   @override
@@ -179,33 +191,38 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     }
   }
 
-  void _skipAll() {
-    _pageCtrl.animateToPage(
-      _pages.length - 1,
-      duration: const Duration(milliseconds: 600),
-      curve: Curves.easeInOutCubic,
-    );
+  Future<void> _skipAll() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('onboarding_done', true);
+    if (mounted) {
+      Navigator.pushReplacementNamed(context, '/home');
+    }
   }
 
   Future<void> _finishOnboarding() async {
-    final name = _nameCtrl.text.trim();
-    if (name.isEmpty || name.length < 2) {
-      setState(() => _nameError = true);
-      return;
-    }
     setState(() {
-      _nameError = false;
       _isLoading = true;
+      _nameError = false;
     });
 
-    final identity = await PlayerIdentity.getInstance();
-    await identity.updateName(name);
+    try {
+      final identity = await PlayerIdentity.getInstance();
+      String name = _nameCtrl.text.trim();
+      if (name.isEmpty || name.length < 2) {
+        name = identity.playerName;
+      }
+      await identity.updateName(name);
 
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('onboarding_done', true);
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('onboarding_done', true);
 
-    if (mounted) {
-      Navigator.pushReplacementNamed(context, '/home');
+      if (mounted) {
+        Navigator.pushReplacementNamed(context, '/home');
+      }
+    } catch (_) {
+      if (mounted) {
+        Navigator.pushReplacementNamed(context, '/home');
+      }
     }
   }
 
@@ -327,8 +344,9 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   }
 
   Widget _buildRegularPageContent(_OnboardingPage page) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         const SizedBox(height: 8),
         // Title
@@ -375,148 +393,151 @@ class _OnboardingScreenState extends State<OnboardingScreen>
           ...page.features.map((f) => _FeatureRow(feature: f, accentColor: page.accentColor)),
         ],
       ],
+      ),
     );
   }
 
   Widget _buildLastPageContent() {
-    return Column(
-      children: [
-        const SizedBox(height: 8),
-        ShaderMask(
-          shaderCallback: (bounds) => const LinearGradient(
-            colors: [_gold, Colors.white, _gold],
-          ).createShader(bounds),
-          child: Text(
-            'Siap untuk\nBertarung?',
-            style: GoogleFonts.baloo2(
-              fontSize: 32,
-              fontWeight: FontWeight.w800,
-              color: Colors.white,
-              letterSpacing: 1,
-              height: 1.1,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          'Masukkan nama jagoanmu!',
-          style: GoogleFonts.nunito(
-            fontSize: 14,
-            color: Colors.white.withOpacity(0.7),
-          ),
-        ),
-        const SizedBox(height: 20),
-        // Name input field
-        Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: _gold.withOpacity(0.2),
-                blurRadius: 20,
-                spreadRadius: 2,
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          const SizedBox(height: 8),
+          ShaderMask(
+            shaderCallback: (bounds) => const LinearGradient(
+              colors: [_gold, Colors.white, _gold],
+            ).createShader(bounds),
+            child: Text(
+              'Siap untuk\nBertarung?',
+              style: GoogleFonts.baloo2(
+                fontSize: 32,
+                fontWeight: FontWeight.w800,
+                color: Colors.white,
+                letterSpacing: 1,
+                height: 1.1,
               ),
-            ],
-          ),
-          child: TextField(
-            controller: _nameCtrl,
-            maxLength: 16,
-            textAlign: TextAlign.center,
-            style: GoogleFonts.baloo2(
-              fontSize: 20,
-              fontWeight: FontWeight.w700,
-              color: Colors.white,
+              textAlign: TextAlign.center,
             ),
-            decoration: InputDecoration(
-              hintText: 'Nama Pemain',
-              hintStyle: GoogleFonts.nunito(
-                color: Colors.white.withOpacity(0.4),
-                fontSize: 16,
-              ),
-              counterText: '',
-              filled: true,
-              fillColor: Colors.white.withOpacity(0.12),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(16),
-                borderSide: BorderSide(
-                  color: _nameError ? Colors.red.shade300 : _gold.withOpacity(0.4),
-                  width: 2,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Masukkan nama jagoanmu!',
+            style: GoogleFonts.nunito(
+              fontSize: 14,
+              color: Colors.white.withOpacity(0.7),
+            ),
+          ),
+          const SizedBox(height: 20),
+          // Name input field
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: _gold.withOpacity(0.2),
+                  blurRadius: 20,
+                  spreadRadius: 2,
                 ),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(16),
-                borderSide: BorderSide(
-                  color: _nameError ? Colors.red.shade300 : _gold.withOpacity(0.4),
-                  width: 2,
-                ),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(16),
-                borderSide: const BorderSide(color: _gold, width: 2.5),
-              ),
-              prefixIcon: const Icon(Icons.person_rounded, color: _gold),
-              errorText: _nameError ? 'Nama harus minimal 2 karakter' : null,
-              errorStyle: GoogleFonts.nunito(color: Colors.orange.shade300, fontSize: 11),
+              ],
             ),
-            onChanged: (_) {
-              if (_nameError) setState(() => _nameError = false);
-            },
-            onSubmitted: (_) => _finishOnboarding(),
-          ),
-        ),
-        const SizedBox(height: 16),
-        // Start button
-        AnimatedBuilder(
-          animation: _pulseAnim,
-          builder: (context, child) {
-            return Transform.scale(
-              scale: _pulseScale.value,
-              child: child,
-            );
-          },
-          child: SizedBox(
-            width: double.infinity,
-            height: 56,
-            child: ElevatedButton(
-              onPressed: _isLoading ? null : _finishOnboarding,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: _gold,
-                foregroundColor: _darkRed,
-                elevation: 12,
-                shadowColor: _gold.withOpacity(0.5),
-                shape: RoundedRectangleBorder(
+            child: TextField(
+              controller: _nameCtrl,
+              maxLength: 16,
+              textAlign: TextAlign.center,
+              style: GoogleFonts.baloo2(
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+              ),
+              decoration: InputDecoration(
+                hintText: 'Nama Pemain',
+                hintStyle: GoogleFonts.nunito(
+                  color: Colors.white.withOpacity(0.4),
+                  fontSize: 16,
+                ),
+                counterText: '',
+                filled: true,
+                fillColor: Colors.white.withOpacity(0.12),
+                border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(16),
+                  borderSide: BorderSide(
+                    color: _nameError ? Colors.red.shade300 : _gold.withOpacity(0.4),
+                    width: 2,
+                  ),
                 ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: BorderSide(
+                    color: _nameError ? Colors.red.shade300 : _gold.withOpacity(0.4),
+                    width: 2,
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: const BorderSide(color: _gold, width: 2.5),
+                ),
+                prefixIcon: const Icon(Icons.person_rounded, color: _gold),
+                errorText: _nameError ? 'Nama harus minimal 2 karakter' : null,
+                errorStyle: GoogleFonts.nunito(color: Colors.orange.shade300, fontSize: 11),
               ),
-              child: _isLoading
-                  ? const SizedBox(
-                      width: 24,
-                      height: 24,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 3,
-                        valueColor: AlwaysStoppedAnimation<Color>(_darkRed),
-                      ),
-                    )
-                  : Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(Icons.sports_esports_rounded, size: 24),
-                        const SizedBox(width: 10),
-                        Text(
-                          'MULAI BERMAIN!',
-                          style: GoogleFonts.baloo2(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w800,
-                            letterSpacing: 2,
-                          ),
-                        ),
-                      ],
-                    ),
+              onChanged: (_) {
+                if (_nameError) setState(() => _nameError = false);
+              },
+              onSubmitted: (_) => _finishOnboarding(),
             ),
           ),
-        ),
-      ],
+          const SizedBox(height: 16),
+          // Start button
+          AnimatedBuilder(
+            animation: _pulseAnim,
+            builder: (context, child) {
+              return Transform.scale(
+                scale: _pulseScale.value,
+                child: child,
+              );
+            },
+            child: SizedBox(
+              width: double.infinity,
+              height: 56,
+              child: ElevatedButton(
+                onPressed: _isLoading ? null : _finishOnboarding,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: _gold,
+                  foregroundColor: _darkRed,
+                  elevation: 12,
+                  shadowColor: _gold.withOpacity(0.5),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
+                child: _isLoading
+                    ? const SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 3,
+                          valueColor: AlwaysStoppedAnimation<Color>(_darkRed),
+                        ),
+                      )
+                    : Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.sports_esports_rounded, size: 24),
+                          const SizedBox(width: 10),
+                          Text(
+                            'MULAI BERMAIN!',
+                            style: GoogleFonts.baloo2(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: 2,
+                            ),
+                          ),
+                        ],
+                      ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -1181,9 +1202,10 @@ class _IllustrationSocialState extends State<_IllustrationSocial>
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
           // Trade icon visual
           Container(
             width: 110,
@@ -1207,7 +1229,7 @@ class _IllustrationSocialState extends State<_IllustrationSocial>
           const SizedBox(height: 20),
           // Animated chat bubbles
           SizedBox(
-            height: 120,
+            height: 160,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: List.generate(_chats.length, (i) {
@@ -1255,7 +1277,7 @@ class _IllustrationSocialState extends State<_IllustrationSocial>
           ),
         ],
       ),
-    );
+    ));
   }
 }
 

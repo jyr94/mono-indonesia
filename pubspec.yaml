@@ -1,7 +1,7 @@
 name: monopoli_indonesia
 description: "Monopoli Indonesia - Digital Monopoly game with Indonesian theme"
 publish_to: 'none'
-version: 1.0.2+5
+version: 1.0.6+9
 
 environment:
   sdk: ^3.12.2
@@ -45,6 +45,9 @@ dependencies:
   audioplayers: ^6.7.1
   google_fonts: ^6.2.1
   lottie: ^3.1.2
+  flame_svg: ^1.12.2
+  google_sign_in: ^7.2.0
+  in_app_review: ^2.0.12
 
 dev_dependencies:
   flutter_test:
@@ -63,3 +66,4 @@ flutter:
     - assets/images/landmarks_real/
     - assets/audio/
     - assets/fonts/
+    - assets/lottie/

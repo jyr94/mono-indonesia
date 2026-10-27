@@ -15,3 +15,10 @@
 
 -dontwarn com.google.firebase.**
 -dontwarn com.google.android.gms.**
+
+# Flutter Engine, Embedding & ReLinker
+-keep class io.flutter.** { *; }
+-keep class io.flutter.embedding.** { *; }
+-keep class com.getkeepsafe.relinker.** { *; }
+-dontwarn io.flutter.**
+-dontwarn com.getkeepsafe.relinker.**

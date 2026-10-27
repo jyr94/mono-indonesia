@@ -4,7 +4,7 @@ class DiceRoll {
   final int die1;
   final int die2;
 
-  const DiceRoll({required this.die1, required this.die2});
+  const DiceRoll({required this.die1, this.die2 = 0});
 
   /// Sum of both dice.
   int get total => die1 + die2;

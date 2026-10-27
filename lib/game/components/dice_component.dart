@@ -25,8 +25,8 @@ class DiceComponent extends PositionComponent {
       : super(
           size: Vector2(120, 60),
           anchor: Anchor.center,
-          // Bottom of board, slightly floating
-          position: Vector2(0, 320),
+          // Center of the screen
+          position: Vector2(0, 0),
         );
 
   @override

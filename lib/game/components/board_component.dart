@@ -1,10 +1,14 @@
 import 'dart:async';
+import 'dart:ui' as ui;
+import 'package:flame/flame.dart';
 import 'package:flame/components.dart';
+import 'package:flame_svg/flame_svg.dart';
 import 'package:flame/events.dart';
 import 'package:flutter/material.dart';
 import '../../models/game_engine.dart';
 import '../../models/tile.dart';
 import '../../models/property.dart';
+import '../../models/utility.dart';
 
 /// Isometric 2.5D board rendered as a Flame PositionComponent.
 ///
@@ -33,6 +37,8 @@ class BoardComponent extends PositionComponent {
 
   final List<_TileRect> _tileRects = [];
   late RectangleComponent _boardBase;
+  final Map<TileType, Svg> _svgs = {};
+  final Map<String, ui.Image> _propertyImages = {};
 
   BoardComponent({
     required this.engine,
@@ -46,6 +52,48 @@ class BoardComponent extends PositionComponent {
   @override
   Future<void> onLoad() async {
     await super.onLoad();
+    
+    // Load SVGs
+    final svgFiles = {
+      TileType.go: 'images/tile_go.svg',
+      TileType.chance: 'images/tile_chance.svg',
+      TileType.communityChest: 'images/tile_community.svg',
+      TileType.jail: 'images/tile_jail.svg',
+      TileType.freeParking: 'images/tile_parking.svg',
+      TileType.goToJail: 'images/tile_gotojail.svg',
+      TileType.tax: 'images/tile_tax.svg',
+    };
+
+    for (final entry in svgFiles.entries) {
+      try {
+        _svgs[entry.key] = await Svg.load(entry.value);
+      } catch (e) {
+        debugPrint('Failed to load SVG ${entry.value}');
+      }
+    }
+
+    // Load property images
+    final propertyImagesToLoad = [
+      'landmarks_real/asia_afrika.jpg',
+      'landmarks_real/braga.jpg',
+      'landmarks_real/diponegoro.jpg',
+      'landmarks_real/lawang_sewu.jpg',
+      'landmarks_real/malioboro.jpg',
+      'landmarks_real/pahlawan.jpg',
+      'landmarks_real/solo.jpg',
+      'landmarks_real/sudirman.jpg',
+      'landmarks_real/suramadu.jpg',
+      'landmarks_real/thamrin.jpg',
+    ];
+
+    for (final path in propertyImagesToLoad) {
+      try {
+        _propertyImages[path] = await Flame.images.load(path);
+      } catch (e) {
+        debugPrint('Failed to load image $path');
+      }
+    }
+
     _buildBoardBase();
     _buildTileRects();
   }
@@ -59,14 +107,15 @@ class BoardComponent extends PositionComponent {
   /// Get world-space position of a tile center (for token placement).
   Vector2 tileWorldPosition(int tileIndex) {
     if (tileIndex < 0 || tileIndex >= _tileRects.length) {
-      return Vector2.zero();
+      return position;
     }
     final rect = _tileRects[tileIndex];
-    final localCenter = Vector2(
+    // Convert from center-relative tile coords → world coords.
+    // Tile rect x,y is center-relative; add board position to get world pos.
+    return position + Vector2(
       rect.x + rect.w / 2,
       rect.y + rect.h / 2,
     );
-    return _applyIsometricTransform(localCenter);
   }
 
   /// Ordered list of world positions from [from] to [to] for walk animation.
@@ -89,32 +138,39 @@ class BoardComponent extends PositionComponent {
 
   // ── Build board ────────────────────────────────────────────────────────────
 
+  /// Center of this component in local space.
+  /// In Flame, children are positioned from parent's top-left (0,0).
+  /// Since BoardComponent size = (_boardSide+200) × (_boardSide+200) and
+  /// anchor = Anchor.center, the visual center in local space is (size/2).
+  double get _cx => size.x / 2; // = (_boardSide + 200) / 2 = 460
+  double get _cy => size.y / 2; // = (_boardSide + 200) / 2 = 460
+
   void _buildBoardBase() {
+    // Outer green border — centered in local space
     final base = RectangleComponent(
+      position: Vector2(_cx, _cy),
       size: Vector2(_boardSide, _boardSide),
       anchor: Anchor.center,
       paint: Paint()..color = const Color(0xFF4E7C3F),
     );
     add(base);
 
-    // Board inner surface
+    // Board inner cream surface
     final inner = RectangleComponent(
+      position: Vector2(_cx, _cy),
       size: Vector2(_boardSide - 14, _boardSide - 14),
       anchor: Anchor.center,
       paint: Paint()..color = const Color(0xFFE8F5E9),
     );
     add(inner);
 
-    // Center label (placeholder until center art asset is ready)
-    final centerArea = RectangleComponent(
+    // Green center area (placeholder until center art asset is ready)
+    final centerArea = _BoardCenterLogo(
+      position: Vector2(_cx, _cy),
       size: Vector2(
         _boardSide - _cornerSize * 2 - 4,
         _boardSide - _cornerSize * 2 - 4,
       ),
-      anchor: Anchor.center,
-      paint: Paint()
-        ..color = const Color(0xFFA8D5A2)
-        ..style = PaintingStyle.fill,
     );
     add(centerArea);
   }
@@ -124,22 +180,42 @@ class BoardComponent extends PositionComponent {
 
     final half = _boardSide / 2;
 
-    // Pre-compute positions in local "flat board" coordinates
-    // Origin at board top-left corner
-
     for (int i = 0; i < 40; i++) {
       _tileRects.add(_computeTileRect(i, half));
     }
 
-    // Add tap targets
+    // Add tap targets — shift positions from center-relative to local top-left-relative
     for (int i = 0; i < _tileRects.length; i++) {
       final rect = _tileRects[i];
+      final tile = engine.board.getTile(i);
+      
+      ui.Image? tileImage;
+      if (tile is Property) {
+        final n = (tile.name as String).toLowerCase();
+        if (n.contains('asia afrika')) { tileImage = _propertyImages['landmarks_real/asia_afrika.jpg']; }
+        else if (n.contains('braga')) { tileImage = _propertyImages['landmarks_real/braga.jpg']; }
+        else if (n.contains('diponegoro') || n.contains('pandanaran')) { tileImage = _propertyImages['landmarks_real/diponegoro.jpg']; }
+        else if (n.contains('lawang sewu')) { tileImage = _propertyImages['landmarks_real/lawang_sewu.jpg']; }
+        else if (n.contains('malioboro')) { tileImage = _propertyImages['landmarks_real/malioboro.jpg']; }
+        else if (n.contains('solo')) { tileImage = _propertyImages['landmarks_real/solo.jpg']; }
+        else if (n.contains('pahlawan') || n.contains('tunjungan')) { tileImage = _propertyImages['landmarks_real/pahlawan.jpg']; }
+        else if (n.contains('suramadu')) { tileImage = _propertyImages['landmarks_real/suramadu.jpg']; }
+        else if (n.contains('sudirman')) { tileImage = _propertyImages['landmarks_real/sudirman.jpg']; }
+        else if (n.contains('thamrin') || n.contains('bundaran hi')) { tileImage = _propertyImages['landmarks_real/thamrin.jpg']; }
+        else if (n.contains('penghibur') || n.contains('trans studio') || n.contains('rotterdam')) { tileImage = _propertyImages['landmarks_real/suramadu.jpg']; }
+        else if (n.contains('kuta') || n.contains('seminyak') || n.contains('nusa dua')) { tileImage = _propertyImages['landmarks_real/braga.jpg']; }
+        else if (n.contains('monas')) { tileImage = _propertyImages['landmarks_real/sudirman.jpg']; }
+      }
+
       final tapTarget = _TileHitbox(
         tileIndex: i,
+        localOffset: Vector2(_cx, _cy),
         rect: rect,
         onTap: onTileTap,
-        tileColor: _tileColor(engine.board.getTile(i)),
+        tileColor: _tileColor(tile),
         engine: engine,
+        svg: _svgs[(tile as dynamic).type as TileType],
+        propertyImage: tileImage,
       );
       add(tapTarget);
     }
@@ -238,6 +314,8 @@ class _TileHitbox extends RectangleComponent with TapCallbacks {
   final _TileRect rect;
   final Function(int) onTap;
   final GameEngine engine;
+  final Svg? svg;
+  final ui.Image? propertyImage;
 
   _TileHitbox({
     required this.tileIndex,
@@ -245,8 +323,15 @@ class _TileHitbox extends RectangleComponent with TapCallbacks {
     required this.onTap,
     required Color tileColor,
     required this.engine,
+    this.svg,
+    this.propertyImage,
+    Vector2? localOffset, // offset to convert center-origin → top-left-origin
   }) : super(
-          position: Vector2(rect.x, rect.y),
+          // rect.x/y are center-relative; add localOffset to shift to top-left coords
+          position: Vector2(
+            rect.x + (localOffset?.x ?? 0),
+            rect.y + (localOffset?.y ?? 0),
+          ),
           size: Vector2(rect.w, rect.h),
           anchor: Anchor.topLeft,
           paint: Paint()
@@ -254,53 +339,166 @@ class _TileHitbox extends RectangleComponent with TapCallbacks {
             ..style = PaintingStyle.fill,
         );
 
+
   @override
   void render(Canvas canvas) {
     super.render(canvas);
+    
+    canvas.save();
+
+    double lw = size.x;
+    double lh = size.y;
+    double angle = 0;
+
+    if (tileIndex >= 11 && tileIndex <= 19) {
+      angle = -3.14159 / 2;
+      lw = size.y; lh = size.x;
+    } else if (tileIndex >= 21 && tileIndex <= 29) {
+      angle = 3.14159;
+    } else if (tileIndex >= 31 && tileIndex <= 39) {
+      angle = 3.14159 / 2;
+      lw = size.y; lh = size.x;
+    } else if (tileIndex == 10) {
+      angle = -3.14159 / 2; 
+    } else if (tileIndex == 20) {
+      angle = 3.14159; 
+    } else if (tileIndex == 30) {
+      angle = 3.14159 / 2; 
+    }
+
+    if (angle != 0) {
+      canvas.translate(size.x / 2, size.y / 2);
+      canvas.rotate(angle);
+      canvas.translate(-lw / 2, -lh / 2);
+    }
+
     // Border
     final borderPaint = Paint()
       ..color = const Color(0xFF2E7D32).withValues(alpha: 0.35)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 0.6;
-    canvas.drawRect(size.toRect(), borderPaint);
+    canvas.drawRect(Rect.fromLTWH(0, 0, lw, lh), borderPaint);
 
-    // Property color bar
     final tile = engine.board.getTile(tileIndex);
-    if (tile is Property) {
-      final barPaint = Paint()
-        ..color = _propertyColor(tile.color)
-        ..style = PaintingStyle.fill;
-      canvas.drawRect(Rect.fromLTWH(0, 0, size.x, 8), barPaint);
-    }
+    final isCorner = tileIndex % 10 == 0;
 
-    // Tile label
-    _drawTileLabel(canvas, tile);
+    // Render SVG if available (for corners, chance, tax, etc)
+    if (svg != null) {
+      final minDimension = lw < lh ? lw : lh;
+      final renderSize = minDimension * (isCorner ? 0.6 : 0.6); 
+      
+      canvas.save();
+      // For SVG, we center it. If it's chance/chest, we move it slightly down to make room for text.
+      double dy = (lh - renderSize) / 2;
+      if (!isCorner) dy += 8; 
+      canvas.translate((lw - renderSize) / 2, dy);
+      svg!.render(canvas, Vector2.all(renderSize));
+      canvas.restore();
+
+      if (!isCorner) {
+         _drawTileText(canvas, tile, lw, lh, hasImage: false);
+      }
+    } else {
+      bool hasImage = propertyImage != null;
+      if (hasImage) {
+        // Draw image covering most of the tile
+        final imageRect = Rect.fromLTWH(0, 14, lw, lh - 14);
+        paintImage(
+          canvas: canvas,
+          rect: imageRect,
+          image: propertyImage!,
+          fit: BoxFit.cover,
+        );
+        // Dark overlay so white text is readable
+        final overlayPaint = Paint()..color = Colors.black.withValues(alpha: 0.55);
+        canvas.drawRect(imageRect, overlayPaint);
+      } else if (tile is Utility) {
+        // Draw Emoji for utility
+        String emoji = '🏢';
+        final n = (tile.name as String).toLowerCase();
+        if (n.contains('listrik')) emoji = '⚡';
+        else if (n.contains('kereta')) emoji = '🚂';
+        else if (n.contains('bandara')) emoji = '✈️';
+        else if (n.contains('tol')) emoji = '🛣️';
+
+        final emojiSpan = TextSpan(
+          text: emoji,
+          style: const TextStyle(fontSize: 24),
+        );
+        final emojiPainter = TextPainter(
+          text: emojiSpan,
+          textAlign: TextAlign.center,
+          textDirection: TextDirection.ltr,
+        )..layout();
+        
+        emojiPainter.paint(
+          canvas,
+          Offset((lw - emojiPainter.width) / 2, (lh - emojiPainter.height) / 2 + 4),
+        );
+      }
+
+      // Property color bar
+      if (tile is Property) {
+        final barPaint = Paint()
+          ..color = _propertyColor(tile.color)
+          ..style = PaintingStyle.fill;
+        canvas.drawRect(Rect.fromLTWH(0, 0, lw, 14), barPaint);
+      }
+
+      // Tile label and price
+      _drawTileText(canvas, tile, lw, lh, hasImage: hasImage);
+    }
+    
+    canvas.restore();
   }
 
-  void _drawTileLabel(Canvas canvas, dynamic tile) {
+  void _drawTileText(Canvas canvas, dynamic tile, double lw, double lh, {required bool hasImage}) {
     final name = tile.name as String;
-    final span = TextSpan(
+    final textColor = hasImage ? Colors.white : const Color(0xFF212121);
+    
+    // Draw Name
+    final nameSpan = TextSpan(
       text: name,
-      style: const TextStyle(
-        fontSize: 5.5,
-        fontWeight: FontWeight.w700,
-        color: Color(0xFF212121),
+      style: TextStyle(
+        fontSize: hasImage ? 7.5 : 7.0,
+        fontWeight: FontWeight.w800,
+        color: textColor,
         height: 1.1,
       ),
     );
-    final tp = TextPainter(
-      text: span,
+    final namePainter = TextPainter(
+      text: nameSpan,
       textAlign: TextAlign.center,
       textDirection: TextDirection.ltr,
-    )..layout(maxWidth: size.x - 4);
+    )..layout(maxWidth: lw - 4);
 
-    tp.paint(
+    namePainter.paint(
       canvas,
-      Offset(
-        (size.x - tp.width) / 2,
-        size.y / 2 - tp.height / 2 + 4,
-      ),
+      Offset((lw - namePainter.width) / 2, 16),
     );
+
+    // Draw Price for properties
+    if (tile is Property) {
+      final priceStr = 'Rp${tile.price}';
+      final priceSpan = TextSpan(
+        text: priceStr,
+        style: TextStyle(
+          fontSize: 8.5,
+          fontWeight: FontWeight.w900,
+          color: hasImage ? const Color(0xFFFFD54F) : const Color(0xFFB71C1C),
+        ),
+      );
+      final pricePainter = TextPainter(
+        text: priceSpan,
+        textAlign: TextAlign.center,
+        textDirection: TextDirection.ltr,
+      )..layout(maxWidth: lw - 4);
+
+      pricePainter.paint(
+        canvas,
+        Offset((lw - pricePainter.width) / 2, lh - 14),
+      );
+    }
   }
 
   Color _propertyColor(PropertyColor color) {
@@ -320,5 +518,110 @@ class _TileHitbox extends RectangleComponent with TapCallbacks {
   bool onTapUp(TapUpEvent event) {
     onTap(tileIndex);
     return true;
+  }
+}
+
+// ── Board Center Logo ────────────────────────────────────────────────────────
+
+class _BoardCenterLogo extends PositionComponent {
+  _BoardCenterLogo({
+    required Vector2 position,
+    required Vector2 size,
+  }) : super(
+          position: position,
+          size: size,
+          anchor: Anchor.center,
+        );
+
+  @override
+  void render(Canvas canvas) {
+    // 1. Draw green background
+    final bgPaint = Paint()..color = const Color(0xFFA8D5A2);
+    canvas.drawRect(size.toRect(), bgPaint);
+
+    // 2. Rotate canvas diagonally for the logo
+    canvas.save();
+    canvas.translate(size.x / 2, size.y / 2);
+    canvas.rotate(-3.14159 / 4); // -45 degrees
+
+    // 3. Draw Red Background Banner for "MONOPOLI"
+    final bannerRect = Rect.fromCenter(center: Offset.zero, width: 440, height: 100);
+    final bannerPaint = Paint()
+      ..color = const Color(0xFFD32F2F)
+      ..style = PaintingStyle.fill;
+    
+    // Add black border to banner
+    final borderPaint = Paint()
+      ..color = Colors.black
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 4.0;
+
+    canvas.drawRect(bannerRect, bannerPaint);
+    canvas.drawRect(bannerRect, borderPaint);
+
+    // 4. Draw "MONOPOLI" Text
+    final monoSpan = const TextSpan(
+      text: 'MONOPOLI',
+      style: TextStyle(
+        fontSize: 64,
+        fontWeight: FontWeight.w900,
+        color: Colors.white,
+        letterSpacing: 10.0,
+      ),
+    );
+    
+    final monoPainter = TextPainter(
+      text: monoSpan,
+      textAlign: TextAlign.center,
+      textDirection: TextDirection.ltr,
+    )..layout();
+    
+    // Add text shadow
+    final shadowSpan = TextSpan(
+      text: 'MONOPOLI',
+      style: TextStyle(
+        fontSize: 64,
+        fontWeight: FontWeight.w900,
+        color: Colors.black,
+        letterSpacing: 10.0,
+      ),
+    );
+    final shadowPainter = TextPainter(
+      text: shadowSpan,
+      textAlign: TextAlign.center,
+      textDirection: TextDirection.ltr,
+    )..layout();
+
+    shadowPainter.paint(
+      canvas,
+      Offset(-monoPainter.width / 2 + 4, -monoPainter.height / 2 + 4),
+    );
+    monoPainter.paint(
+      canvas,
+      Offset(-monoPainter.width / 2, -monoPainter.height / 2),
+    );
+
+    // 5. Draw "INDONESIA" Text below the banner
+    final indoSpan = const TextSpan(
+      text: 'INDONESIA',
+      style: TextStyle(
+        fontSize: 32,
+        fontWeight: FontWeight.bold,
+        color: Color(0xFF2E7D32), // Dark Green
+        letterSpacing: 16.0,
+      ),
+    );
+    final indoPainter = TextPainter(
+      text: indoSpan,
+      textAlign: TextAlign.center,
+      textDirection: TextDirection.ltr,
+    )..layout();
+    
+    indoPainter.paint(
+      canvas,
+      Offset(-indoPainter.width / 2, bannerRect.bottom + 12),
+    );
+
+    canvas.restore();
   }
 }

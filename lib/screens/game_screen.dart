@@ -11,16 +11,12 @@ import '../models/game_engine.dart';
 import '../models/tile.dart';
 import '../services/game_sync_service.dart';
 import '../services/audio_service.dart';
-import '../widgets/board_widget.dart';
-import '../widgets/player_status_card.dart';
-import '../widgets/turn_banner.dart';
-import '../widgets/dice_result_panel.dart';
-import '../widgets/bottom_action_bar.dart';
-import '../widgets/game_floating_button.dart';
 import '../widgets/property_detail_sheet.dart';
 import '../widgets/auction_dialog.dart';
 import '../widgets/trade_dialog.dart';
 import '../widgets/mortgage_sheet.dart';
+import '../game/overlays/flame_game_screen.dart';
+import '../services/app_review_service.dart';
 
 class GameScreen extends StatefulWidget {
   final GameSyncService? syncService;
@@ -144,6 +140,15 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
 
   GameState get gs => engine.gameState;
   Player get current => gs.currentPlayer;
+
+  /// Local player ID — used by FlameGameScreen to know whose turn it is.
+  String get _localPlayerId {
+    if (_isMultiplayer) return widget.syncService!.playerId;
+    // Single-player: always the first player
+    return engine.gameState.players.isNotEmpty
+        ? engine.gameState.players.first.id
+        : '1';
+  }
 
   void _float(String msg) {
     setState(() => _floatingMsg = msg);
@@ -665,6 +670,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
 
   void _showWinner() {
     _audio.playWin();
+    AppReviewService.instance.recordGameCompleted();
     final w = gs.players.firstWhere(
       (p) => p.id == gs.winnerId,
       orElse: () => gs.players.first,
@@ -966,492 +972,73 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    final mq = MediaQuery.of(context);
-    final isMyTurn = _isMultiplayer
-        ? current.id == widget.syncService!.playerId
-        : true;
-    final canAct = isMyTurn && !gs.isFinished;
-    final isBuying = gs.phase == TurnPhase.buying;
-
-    return Scaffold(
-      backgroundColor: const Color(0xFF87CEEB),
-      body: Stack(
-        children: [
-          // Sky gradient background
-          Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Color(0xFF5ECDF0),
-                  Color(0xFFA7E4F7),
-                  Color(0xFFFFDCA8),
-                ],
-              ),
-            ),
-          ),
-          _floatingSceneryCard(
-            left: 20,
-            top: 130,
-            color: const Color(0xFF8D6E63),
-            icon: Icons.temple_buddhist,
-            label: 'BOROBUDUR',
-          ),
-          _floatingSceneryCard(
-            right: 20,
-            top: 100,
-            color: const Color(0xFFFFB74D),
-            icon: Icons.domain,
-            label: 'MONAS',
-          ),
-          _floatingSceneryCard(
-            left: 24,
-            bottom: 210,
-            color: const Color(0xFF42A5F5),
-            icon: Icons.waves,
-            label: 'KUTA BALI',
-          ),
-          _floatingSceneryCard(
-            right: 24,
-            bottom: 160,
-            color: const Color(0xFF26A69A),
-            icon: Icons.home_work,
-            label: 'MINANG',
-          ),
-
-          SafeArea(
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                final contentWidth = constraints.maxWidth > 430
-                    ? 430.0
-                    : constraints.maxWidth;
-                final compactHeight = constraints.maxHeight < 720;
-                final horizontalInset = compactHeight ? 10.0 : 16.0;
-                final actionBarClearance = compactHeight ? 116.0 : 128.0;
-
-                return Center(
-                  child: SizedBox(
-                    width: contentWidth,
-                    height: constraints.maxHeight,
-                    child: Stack(
-                      children: [
-                        Positioned.fill(
-                          child: Column(
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.fromLTRB(
-                                  horizontalInset,
-                                  compactHeight ? 4 : 8,
-                                  horizontalInset,
-                                  0,
-                                ),
-                                child: Column(
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Expanded(
-                                          child: PlayerStatusCard(
-                                            player: gs.players.isNotEmpty
-                                                ? gs.players[0]
-                                                : const Player(id: '', name: '...'),
-                                            isCurrentPlayer:
-                                                gs.players.isNotEmpty &&
-                                                current.id == gs.players[0].id &&
-                                                !gs.isFinished,
-                                            isLeft: true,
-                                            propertyColors: gs.players.isNotEmpty ? _getPropertyColors(gs.players[0].id) : const [],
-                                          ),
-                                        ),
-                                        SizedBox(width: compactHeight ? 8 : 12),
-                                        if (gs.players.length > 1)
-                                          Expanded(
-                                            child: PlayerStatusCard(
-                                              player: gs.players[1],
-                                              isCurrentPlayer:
-                                                  current.id == gs.players[1].id &&
-                                                  !gs.isFinished,
-                                              isLeft: false,
-                                              propertyColors: _getPropertyColors(gs.players[1].id),
-                                            ),
-                                          )
-                                        else
-                                          const Spacer(),
-                                      ],
-                                    ),
-                                    if (gs.players.length > 2) ...[
-                                      SizedBox(height: compactHeight ? 4 : 8),
-                                      Row(
-                                        children: [
-                                          Expanded(
-                                            child: PlayerStatusCard(
-                                              player: gs.players[2],
-                                              isCurrentPlayer:
-                                                  current.id == gs.players[2].id &&
-                                                  !gs.isFinished,
-                                              isLeft: true,
-                                              propertyColors: _getPropertyColors(gs.players[2].id),
-                                            ),
-                                          ),
-                                          SizedBox(width: compactHeight ? 8 : 12),
-                                          if (gs.players.length > 3)
-                                            Expanded(
-                                              child: PlayerStatusCard(
-                                                player: gs.players[3],
-                                                isCurrentPlayer:
-                                                    current.id == gs.players[3].id &&
-                                                    !gs.isFinished,
-                                                isLeft: false,
-                                                propertyColors: _getPropertyColors(gs.players[3].id),
-                                              ),
-                                            )
-                                          else
-                                            const Spacer(),
-                                        ],
-                                      ),
-                                    ],
-                                  ],
-                                ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.only(
-                                  top: compactHeight ? 2 : 6,
-                                ),
-                                child: TurnBanner(
-                                  playerName: current.name,
-                                  timeRemaining: _turnTimeRemaining,
-                                  isMyTurn: isMyTurn && !gs.isFinished,
-                                ),
-                              ),
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.fromLTRB(
-                                    0,
-                                    0,
-                                    0,
-                                    6,
-                                  ),
-                                  child: Center(
-                                    child: ClipRect(
-                                      child: LayoutBuilder(
-                                        builder: (context, cameraConstraints) {
-                                          return TweenAnimationBuilder<
-                                            Alignment
-                                          >(
-                                            tween: AlignmentTween(
-                                              end: _isFollowingToken
-                                                  ? _boardFocusForTile(
-                                                      _animatedPosition,
-                                                    )
-                                                  : Alignment.center,
-                                            ),
-                                            duration: const Duration(
-                                              milliseconds: 850,
-                                            ),
-                                            curve: Curves.easeInOutCubic,
-                                            builder: (context, focus, child) {
-                                              return TweenAnimationBuilder<
-                                                double
-                                              >(
-                                                tween: Tween(
-                                                  end: _isFollowingToken
-                                                      ? 1.85
-                                                      : 1,
-                                                ),
-                                                duration: const Duration(
-                                                  milliseconds: 950,
-                                                ),
-                                                curve: Curves.easeInOutCubic,
-                                                builder:
-                                                    (context, scale, child) {
-                                                      final offset = Offset(
-                                                        -focus.x *
-                                                            cameraConstraints
-                                                                .maxWidth *
-                                                            0.5 *
-                                                            scale,
-                                                        -focus.y *
-                                                            cameraConstraints
-                                                                .maxHeight *
-                                                            0.5 *
-                                                            scale,
-                                                      );
-                                                      return Transform.translate(
-                                                        offset: offset,
-                                                        child: Transform.scale(
-                                                          scale: scale,
-                                                          alignment:
-                                                              Alignment.center,
-                                                          child: child,
-                                                        ),
-                                                      );
-                                                    },
-                                                child: child,
-                                              );
-                                            },
-                                            child: BoardWidget(
-                                              board: engine.board,
-                                              players: _displayPlayers,
-                                              movingPlayerId: _isFollowingToken
-                                                  ? _movingPlayerId
-                                                  : null,
-                                              onTileTap: _isFollowingToken
-                                                  ? null
-                                                  : _showTileInfo,
-                                            ),
-                                          );
-                                        },
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.only(
-                                  bottom: compactHeight ? 5 : 8,
-                                ),
-                                child: DiceResultPanel(
-                                  finalDie1: currentRoll?.die1,
-                                  finalDie2: currentRoll?.die2,
-                                  isRolling: _isDiceRolling,
-                                  onRollComplete: _onDiceDone,
-                                  enabled: canAct,
-                                ),
-                              ),
-                              BottomActionBar(
-                                onRollDice:
-                                    canAct &&
-                                        engine.canRollDice &&
-                                        !_isDiceRolling
-                                    ? _rollDice
-                                    : null,
-                                onBuyProperty:
-                                    canAct && isBuying && engine.canBuyProperty
-                                    ? _buyProperty
-                                    : null,
-                                onBuild:
-                                    canAct &&
-                                        engine.buildableProperties.isNotEmpty
-                                    ? _buildHouse
-                                    : null,
-                                onTrade: canAct &&
-                                        gs.players.where((p) => !p.isBankrupt).length > 1
-                                    ? _showTrade
-                                    : null,
-                                onMortgage: canAct
-                                    ? _showMortgage
-                                    : null,
-                                onChat: _showMenu,
-                              ),
-                            ],
-                          ),
-                        ),
-                        Positioned(
-                          bottom: actionBarClearance,
-                          left: 24,
-                          child: GameFloatingButton(
-                            icon: Icons.skip_next,
-                            onTap: canAct && engine.canEndTurn
-                                ? _endTurn
-                                : null,
-                          ),
-                        ),
-                        Positioned(
-                          bottom: actionBarClearance,
-                          right: 24,
-                          child: GameFloatingButton(
-                            icon: Icons.menu,
-                            onTap: _showMenu,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-
-          // ─── Floating Message ───
-          if (_floatingMsg != null)
-            Positioned(
-              top: mq.size.height * 0.38,
-              left: 40,
-              right: 40,
-              child: SlideTransition(
-                position: _floatAnim,
-                child: Material(
-                  color: Colors.transparent,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 24,
-                      vertical: 14,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.black.withValues(alpha: 0.85),
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.3),
-                          blurRadius: 16,
-                        ),
-                      ],
-                    ),
-                    child: Text(
-                      _floatingMsg!,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-
-  Widget _floatingSceneryCard({
-    double? left,
-    double? right,
-    double? top,
-    double? bottom,
-    required Color color,
-    required IconData icon,
-    required String label,
-  }) {
-    return AnimatedBuilder(
-      animation: _sceneryFloatCtrl,
-      builder: (context, child) {
-        final floatOffset = sin(_sceneryFloatCtrl.value * pi * 2) * 8.0;
-        return Positioned(
-          left: left,
-          right: right,
-          top: top != null ? top + floatOffset : null,
-          bottom: bottom != null ? bottom - floatOffset : null,
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.12),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: Colors.white.withOpacity(0.25),
-                width: 1.5,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.08),
-                  blurRadius: 12,
-                  offset: const Offset(0, 6),
-                ),
-              ],
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(6),
-                  decoration: BoxDecoration(
-                    color: color.withOpacity(0.2),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    icon,
-                    size: 20,
-                    color: color,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  label,
-                  style: const TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w900,
-                    color: Colors.white,
-                    letterSpacing: 0.8,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
+    // ── Flame-powered game screen ──────────────────────────────────────────
+    // Engine init + sync subscriptions remain in this State.
+    // All rendering (board, tokens, dice, HUD) is handled by FlameGameScreen.
+    return FlameGameScreen(
+      initialEngine: engine,
+      localPlayerId: _localPlayerId,
+      syncService: widget.syncService,
+      onEngineUpdated: (updatedEngine) {
+        if (mounted) setState(() => engine = updatedEngine);
       },
     );
   }
 }
 
+// ─── Confetti overlay for winner celebration ──────────────────────────────────
+
 class ConfettiOverlay extends StatefulWidget {
   const ConfettiOverlay({super.key});
-
   @override
   State<ConfettiOverlay> createState() => _ConfettiOverlayState();
 }
 
-class _ConfettiOverlayState extends State<ConfettiOverlay> with SingleTickerProviderStateMixin {
-  late AnimationController _ctrl;
+class _ConfettiOverlayState extends State<ConfettiOverlay>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _ctrl;
   final List<_ConfettiParticle> _particles = [];
-  final Random _rnd = Random();
+  final _rnd = Random();
 
   @override
   void initState() {
     super.initState();
-    _ctrl = AnimationController(vsync: this, duration: const Duration(seconds: 4))..forward();
+    for (int i = 0; i < 80; i++) _particles.add(_ConfettiParticle(_rnd));
+    _ctrl = AnimationController(vsync: this, duration: const Duration(seconds: 4))..repeat();
     _ctrl.addListener(() {
-      if (mounted) {
-        setState(() {
-          for (final p in _particles) p.update();
-        });
-      }
+      for (final p in _particles) p.update(_ctrl.value);
+      if (mounted) setState(() {});
     });
-    for (int i = 0; i < 150; i++) {
-      _particles.add(_ConfettiParticle(
-        x: _rnd.nextDouble(),
-        y: -_rnd.nextDouble() * 1.5,
-        vx: (_rnd.nextDouble() - 0.5) * 0.05,
-        vy: _rnd.nextDouble() * 0.02 + 0.01,
-        color: [Colors.red, Colors.blue, Colors.green, Colors.yellow, Colors.purple, Colors.orange][_rnd.nextInt(6)],
-        size: _rnd.nextDouble() * 8 + 4,
-        angle: _rnd.nextDouble() * pi * 2,
-        rotSpeed: (_rnd.nextDouble() - 0.5) * 0.2,
-      ));
-    }
   }
 
   @override
-  void dispose() {
-    _ctrl.dispose();
-    super.dispose();
-  }
+  void dispose() { _ctrl.dispose(); super.dispose(); }
 
   @override
-  Widget build(BuildContext context) {
-    return CustomPaint(
-      painter: _ConfettiPainter(_particles),
-      size: Size.infinite,
-    );
-  }
+  Widget build(BuildContext context) =>
+      CustomPaint(painter: _ConfettiPainter(_particles), size: Size.infinite);
 }
 
 class _ConfettiParticle {
-  double x, y, vx, vy, size, angle, rotSpeed;
+  double x, y, angle, speed, size;
   Color color;
-  _ConfettiParticle({required this.x, required this.y, required this.vx, required this.vy, required this.color, required this.size, required this.angle, required this.rotSpeed});
-
-  void update() {
-    x += vx;
-    y += vy;
-    angle += rotSpeed;
-  }
+  static final _colors = [
+    const Color(0xFFFFD700), const Color(0xFFC62828),
+    const Color(0xFF1565C0), const Color(0xFF2E7D32),
+    const Color(0xFFFFB300), Colors.white,
+  ];
+  _ConfettiParticle(Random rnd)
+      : x = rnd.nextDouble(), y = rnd.nextDouble() * -0.5,
+        angle = rnd.nextDouble() * 3.14,
+        speed = 0.002 + rnd.nextDouble() * 0.003,
+        size = 6 + rnd.nextDouble() * 8,
+        color = _colors[rnd.nextInt(_colors.length)];
+  void update(double t) { y += speed; angle += 0.04; if (y > 1.3) y = -0.1; }
 }
 
 class _ConfettiPainter extends CustomPainter {
   final List<_ConfettiParticle> particles;
   _ConfettiPainter(this.particles);
-
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()..style = PaintingStyle.fill;
@@ -1465,7 +1052,6 @@ class _ConfettiPainter extends CustomPainter {
       canvas.restore();
     }
   }
-
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
+  bool shouldRepaint(covariant CustomPainter old) => true;
 }

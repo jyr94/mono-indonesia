@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/player_identity.dart';
+import '../services/analytics_service.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -23,6 +24,7 @@ class _SplashScreenState extends State<SplashScreen>
   late Animation<Offset> _titleSlide;
   late Animation<double> _titleOpacity;
   late Animation<double> _bgOpacity;
+  bool _navigated = false;
 
   @override
   void initState() {
@@ -30,15 +32,15 @@ class _SplashScreenState extends State<SplashScreen>
 
     _bgCtrl = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 600),
+      duration: const Duration(milliseconds: 300),
     );
     _logoCtrl = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 800),
+      duration: const Duration(milliseconds: 400),
     );
     _titleCtrl = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 700),
+      duration: const Duration(milliseconds: 350),
     );
     _shimmerCtrl = AnimationController(
       vsync: this,
@@ -62,30 +64,51 @@ class _SplashScreenState extends State<SplashScreen>
       CurvedAnimation(parent: _titleCtrl, curve: Curves.easeIn),
     );
 
+    try {
+      AnalyticsService().logScreenView('splash_screen');
+    } catch (_) {}
     _runSequence();
   }
 
   Future<void> _runSequence() async {
-    final identityFuture = PlayerIdentity.getInstance();
-    await _bgCtrl.forward();
-    await Future<void>.delayed(const Duration(milliseconds: 100));
-    _logoCtrl.forward();
-    await Future<void>.delayed(const Duration(milliseconds: 300));
-    _titleCtrl.forward();
-    await Future.wait([
-      Future<void>.delayed(const Duration(milliseconds: 2500)),
-      identityFuture,
-    ]);
-    if (!mounted) return;
+    try {
+      _bgCtrl.forward();
+      _logoCtrl.forward();
+      await Future<void>.delayed(const Duration(milliseconds: 150));
+      _titleCtrl.forward();
 
-    final prefs = await SharedPreferences.getInstance();
-    final onboardingDone = prefs.getBool('onboarding_done') ?? false;
+      await Future.wait([
+        Future<void>.delayed(const Duration(milliseconds: 1200)),
+        PlayerIdentity.getInstance().timeout(
+          const Duration(seconds: 2),
+          onTimeout: () => PlayerIdentity.getInstance(),
+        ),
+      ]).timeout(const Duration(seconds: 3));
+    } catch (e) {
+      debugPrint('[SplashScreen] Note: $e');
+    } finally {
+      _navigateNext();
+    }
+  }
 
-    if (!mounted) return;
-    if (onboardingDone) {
-      Navigator.pushReplacementNamed(context, '/home');
-    } else {
-      Navigator.pushReplacementNamed(context, '/onboarding');
+  Future<void> _navigateNext() async {
+    if (_navigated || !mounted) return;
+    _navigated = true;
+
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final onboardingDone = prefs.getBool('onboarding_done') ?? false;
+
+      if (!mounted) return;
+      if (onboardingDone) {
+        Navigator.pushReplacementNamed(context, '/home');
+      } else {
+        Navigator.pushReplacementNamed(context, '/onboarding');
+      }
+    } catch (e) {
+      if (mounted) {
+        Navigator.pushReplacementNamed(context, '/home');
+      }
     }
   }
 
@@ -101,9 +124,12 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: FadeTransition(
-        opacity: _bgOpacity,
-        child: Container(
+      body: GestureDetector(
+        onTap: _navigateNext,
+        behavior: HitTestBehavior.opaque,
+        child: FadeTransition(
+          opacity: _bgOpacity,
+          child: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topCenter,
@@ -163,8 +189,9 @@ class _SplashScreenState extends State<SplashScreen>
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildLogo() {
     return Container(

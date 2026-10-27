@@ -18,6 +18,7 @@ class Player {
   final bool isHost;
   /// How many "Get Out of Jail Free" cards this player holds.
   final int jailFreeCards;
+  final bool isBot;
 
   const Player({
     required this.id,
@@ -30,6 +31,7 @@ class Player {
     this.avatarColor,
     this.isHost = false,
     this.jailFreeCards = 0,
+    this.isBot = false,
   });
 
   bool get isBankrupt => status == PlayerStatus.bankrupt;
@@ -45,6 +47,7 @@ class Player {
     String? avatarColor,
     bool? isHost,
     int? jailFreeCards,
+    bool? isBot,
   }) {
     return Player(
       id: id,
@@ -57,6 +60,7 @@ class Player {
       avatarColor: avatarColor ?? this.avatarColor,
       isHost: isHost ?? this.isHost,
       jailFreeCards: jailFreeCards ?? this.jailFreeCards,
+      isBot: isBot ?? this.isBot,
     );
   }
 
@@ -72,6 +76,7 @@ class Player {
       'avatarColor': avatarColor,
       'isHost': isHost,
       'jailFreeCards': jailFreeCards,
+      'isBot': isBot,
     };
   }
 
@@ -90,6 +95,7 @@ class Player {
       avatarColor: json['avatarColor'] as String?,
       isHost: json['isHost'] as bool? ?? false,
       jailFreeCards: json['jailFreeCards'] as int? ?? 0,
+      isBot: json['isBot'] as bool? ?? false,
     );
   }
 }

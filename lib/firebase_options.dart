@@ -55,6 +55,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '579782719547',
     projectId: 'jyr-app-games',
     authDomain: 'jyr-app-games.firebaseapp.com',
+    databaseURL: 'https://jyr-app-games-default-rtdb.firebaseio.com',
     storageBucket: 'jyr-app-games.firebasestorage.app',
     measurementId: 'G-ZYXEGJ98LK',
   );
@@ -64,6 +65,7 @@ class DefaultFirebaseOptions {
     appId: '1:579782719547:android:f47c21db3b5be56715c41e',
     messagingSenderId: '579782719547',
     projectId: 'jyr-app-games',
+    databaseURL: 'https://jyr-app-games-default-rtdb.firebaseio.com',
     storageBucket: 'jyr-app-games.firebasestorage.app',
   );
 }

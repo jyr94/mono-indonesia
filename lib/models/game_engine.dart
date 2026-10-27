@@ -574,6 +574,34 @@ class GameEngine {
   List<Property> get buildableProperties =>
       board.getAllPropertiesOwnedBy(currentPlayer.id).where(canBuildHouse).toList();
 
+  bool canSellHouse(Property property) {
+    if (!property.isOwned) return false;
+    if (property.owner != currentPlayer.id) return false;
+    if (property.houses <= 0) return false;
+
+    // Even-selling rule
+    final properties = board.getPropertiesByColor(property.color);
+    final maxHouses  = properties.map((p) => p.houses).reduce(max);
+    if (property.houses < maxHouses) return false;
+
+    return true;
+  }
+
+  bool sellHouse(int propertyIndex) {
+    final tile = board.getTile(propertyIndex);
+    if (tile is! Property || !canSellHouse(tile)) return false;
+
+    // Sell for half the price
+    final sellValue = tile.houseCost ~/ 2;
+    _updateTile(propertyIndex, tile.copyWith(houses: tile.houses - 1));
+    _updatePlayers(currentPlayer.copyWith(money: currentPlayer.money + sellValue));
+    _setMessage('${currentPlayer.name} menjual rumah di ${tile.name} → Terima Rp $sellValue 🏠');
+    
+    // Check if player recovered from debt
+    _checkDebtRecovery();
+    return true;
+  }
+
   // ── Mortgage ──────────────────────────────────────────────────────────────
 
   /// Mortgage value = half the purchase price.
@@ -627,6 +655,7 @@ class GameEngine {
     }
     _updatePlayers(currentPlayer.copyWith(money: currentPlayer.money + value));
     _setMessage('${currentPlayer.name} menggadai ${tile.name} → Terima Rp $value 💰');
+    _checkDebtRecovery();
     return true;
   }
 
@@ -730,11 +759,31 @@ class GameEngine {
   void _checkBankrupt(Player player) {
     if (player.money >= 0) return;
 
-    final updatedPlayer = player.copyWith(status: PlayerStatus.bankrupt);
+    if (player.id == currentPlayer.id && gameState.phase != TurnPhase.inDebt) {
+      gameState = gameState.copyWith(phase: TurnPhase.inDebt);
+      _setMessage('${player.name} berhutang! Segera gadai/jual aset atau nyatakan Bangkrut! 🚨');
+    }
+  }
+
+  void _checkDebtRecovery() {
+    if (gameState.phase == TurnPhase.inDebt && currentPlayer.money >= 0) {
+      gameState = gameState.copyWith(phase: TurnPhase.postRoll);
+      _setMessage('${currentPlayer.name} berhasil melunasi hutang! 😌');
+    }
+  }
+
+  void declareBankruptcy() {
+    if (gameState.phase != TurnPhase.inDebt) return;
+    
+    final player = currentPlayer;
+    final updatedPlayer = player.copyWith(status: PlayerStatus.bankrupt, money: 0);
     _updatePlayers(updatedPlayer);
     _releaseAllProperties(player.id);
-    _setMessage('${player.name} bangkrut! 💀');
+    _setMessage('${player.name} menyerah dan dinyatakan bangkrut! 💀');
     _checkGameEnd();
+    
+    // Auto end turn
+    endTurn();
   }
 
   void _releaseAllProperties(String playerId) {
@@ -761,7 +810,7 @@ class GameEngine {
   // ── Turn Management ───────────────────────────────────────────────────────
 
   void endTurn() {
-    if (gameState.phase == TurnPhase.buying || gameState.phase == TurnPhase.auctioning) {
+    if (gameState.phase == TurnPhase.buying || gameState.phase == TurnPhase.auctioning || gameState.phase == TurnPhase.inDebt) {
       return;
     }
 

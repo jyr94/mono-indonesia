@@ -14,6 +14,7 @@ enum TurnPhase {
   buying,
   auctioning,
   building,
+  inDebt,
   ended,
 }
 

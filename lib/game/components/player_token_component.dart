@@ -3,6 +3,7 @@ import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
 import 'package:flutter/material.dart';
 import '../../models/player.dart';
+import '../../services/audio_service.dart';
 
 /// Renders a player token as an animated Flame component.
 ///
@@ -57,16 +58,45 @@ class PlayerTokenComponent extends PositionComponent {
   Future<void> walkPath(List<Vector2> path) async {
     for (final waypoint in path) {
       final dist = position.distanceTo(waypoint);
-      final duration = (dist / 300).clamp(0.05, 0.25);
-      await add(
-        MoveToEffect(
-          waypoint,
-          EffectController(duration: duration, curve: Curves.easeInOut),
+      final duration = (dist / 150).clamp(0.2, 0.4); // faster steps
+      final completer = Completer<void>();
+      
+      // Play step sound
+      AudioService().playStep();
+
+      // Hop illusion (scale up and down)
+      add(
+        ScaleEffect.to(
+          Vector2.all(1.5),
+          EffectController(
+            duration: duration / 2,
+            reverseDuration: duration / 2,
+            curve: Curves.easeOutQuad,
+          ),
         ),
       );
-      await Future<void>.delayed(
-        Duration(milliseconds: (duration * 1000 * 0.8).round()),
+
+      // Slight wobble
+      add(
+        RotateEffect.by(
+          0.15,
+          EffectController(
+            duration: duration / 2,
+            reverseDuration: duration / 2,
+          ),
+        ),
       );
+
+      // Linear slide to target
+      add(
+        MoveToEffect(
+          waypoint,
+          EffectController(duration: duration, curve: Curves.linear),
+          onComplete: completer.complete,
+        ),
+      );
+      
+      await completer.future;
     }
   }
 

@@ -265,8 +265,16 @@ class _TradeDialogState extends State<TradeDialog> {
                 child: ElevatedButton.icon(
                   onPressed: _propose,
                   icon: const Icon(Icons.check_rounded),
-                  label: Text(widget.syncService != null ? 'AJUKAN' : 'AJUKAN & SETUJUI',
-                      style: TextStyle(fontWeight: FontWeight.w900)),
+                  label: Flexible(
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        widget.syncService != null ? 'AJUKAN' : 'AJUKAN & SETUJUI',
+                        style: const TextStyle(fontWeight: FontWeight.w900),
+                        maxLines: 1,
+                      ),
+                    ),
+                  ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF00695C),
                     foregroundColor: Colors.white,

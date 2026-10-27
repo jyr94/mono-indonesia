@@ -179,10 +179,13 @@ class _MortgageSheetState extends State<MortgageSheet> {
                   minimumSize: Size.zero,
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 ),
-                child: Text(
-                  e.isMortgaged ? 'TEBUS' : 'GADAI',
-                  style: const TextStyle(
-                      fontSize: 11, fontWeight: FontWeight.w900),
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    e.isMortgaged ? 'TEBUS' : 'GADAI',
+                    style: const TextStyle(
+                        fontSize: 11, fontWeight: FontWeight.w900),
+                  ),
                 ),
               )
             : Text(

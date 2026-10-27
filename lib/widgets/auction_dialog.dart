@@ -241,41 +241,51 @@ class _AuctionDialogState extends State<AuctionDialog> {
                         ],
                       ),
                     ),
-                    if (isActive) ...[
-                      // Quick bid buttons
-                      _buildBidButton(
-                        player.id,
-                        currentBid + 10,
-                        '+10',
-                        player.money > currentBid + 10,
-                      ),
-                      const SizedBox(width: 4),
-                      _buildBidButton(
-                        player.id,
-                        currentBid + 50,
-                        '+50',
-                        player.money > currentBid + 50,
-                      ),
-                      const SizedBox(width: 4),
-                      // Pass button
-                      SizedBox(
-                        height: 30,
-                        child: OutlinedButton(
-                          onPressed: () => _passBid(player.id),
-                          style: OutlinedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(horizontal: 8),
-                            side: BorderSide(color: Colors.grey.shade400),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                          ),
-                          child: const Text(
-                            'Lewat',
-                            style: TextStyle(fontSize: 10, color: Colors.grey),
+                    if (isActive) 
+                      Expanded(
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          reverse: true, // so buttons align to the right initially if possible
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              _buildBidButton(
+                                player.id,
+                                currentBid + 10,
+                                '+10',
+                                player.money > currentBid + 10,
+                              ),
+                              const SizedBox(width: 4),
+                              _buildBidButton(
+                                player.id,
+                                currentBid + 50,
+                                '+50',
+                                player.money > currentBid + 50,
+                              ),
+                              const SizedBox(width: 4),
+                              // Pass button
+                              SizedBox(
+                                height: 30,
+                                child: OutlinedButton(
+                                  onPressed: () => _passBid(player.id),
+                                  style: OutlinedButton.styleFrom(
+                                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                                    side: BorderSide(color: Colors.grey.shade400),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
+                                  ),
+                                  child: const Text(
+                                    'Lewat',
+                                    style: TextStyle(fontSize: 10, color: Colors.grey),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      ),
-                    ] else
+                      )
+                    else
                       const Text(
                         'Lewat',
                         style: TextStyle(fontSize: 11, color: Colors.grey),

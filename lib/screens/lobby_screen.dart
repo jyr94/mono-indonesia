@@ -494,12 +494,15 @@ class _LobbyScreenState extends State<LobbyScreen> with TickerProviderStateMixin
                                         children: [
                                           Row(
                                             children: [
-                                              Text(
-                                                player.name,
-                                                style: const TextStyle(
-                                                  fontWeight: FontWeight.w800,
-                                                  fontSize: 15,
-                                                  color: Colors.white,
+                                              Flexible(
+                                                child: Text(
+                                                  player.name,
+                                                  style: const TextStyle(
+                                                    fontWeight: FontWeight.w800,
+                                                    fontSize: 15,
+                                                    color: Colors.white,
+                                                  ),
+                                                  overflow: TextOverflow.ellipsis,
                                                 ),
                                               ),
                                               if (isMe) ...[
